@@ -7,7 +7,7 @@
 #include "eparser/common/helpers.h"
 #include "eparser/common/lexer_base.h"
 
-namespace eparser { namespace rules {
+namespace eparser { namespace expressions {
 
     template <typename CharT, typename KeyT, typename LessT = std::less<CharT>>
     class lexer {

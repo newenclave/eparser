@@ -1,8 +1,8 @@
 #pragma once
 #include "eparser/common/lexer_base.h"
-#include "eparser/rules/objects/operations.h"
+#include "eparser/expressions/objects/operations.h"
 
-namespace eparser { namespace rules { namespace ast {
+namespace eparser { namespace expressions { namespace ast {
 
     template <typename CharT, typename KeyT>
     class node : public objects::base {
@@ -14,7 +14,8 @@ namespace eparser { namespace rules { namespace ast {
         using token_info = common::token_info<char_type, key_type>;
         using uptr = std::unique_ptr<this_type>;
         using string_type = std::basic_string<char_type>;
-        using operations_type = rules::objects::oprerations::all<key_type>;
+        using operations_type
+            = expressions::objects::oprerations::all<key_type>;
 
         node(node&&) = default;
         node& operator=(node&&) = default;

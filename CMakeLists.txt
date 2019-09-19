@@ -11,8 +11,8 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 list( APPEND src ./include/eparser
                  ./include/eparser/common
-                 ./include/eparser/rules
-                 ./include/eparser/rules/objects
+                 ./include/eparser/expressions
+                 ./include/eparser/expressions/objects
                  ./tests
                  )
 

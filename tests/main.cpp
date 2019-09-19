@@ -1,12 +1,12 @@
-#include "eparser/rules/ast.h"
-#include "eparser/rules/objects/operations.h"
-#include "eparser/rules/parser.h"
+#include "eparser/expressions/ast.h"
+#include "eparser/expressions/objects/operations.h"
+#include "eparser/expressions/parser.h"
 
 #include <chrono>
 #include <iostream>
 
 using namespace eparser::common;
-using namespace eparser::rules;
+using namespace eparser::expressions;
 
 struct node {
     using uptr = std::unique_ptr<node>;

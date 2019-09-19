@@ -5,7 +5,7 @@
 #include <memory>
 #include <type_traits>
 
-namespace eparser { namespace rules { namespace objects {
+namespace eparser { namespace expressions { namespace objects {
 
     struct base {
     public:

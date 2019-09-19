@@ -1,9 +1,9 @@
 #pragma once
 #include "eparser/common/parser_base.h"
-#include "eparser/rules/ast.h"
-#include "eparser/rules/lexer.h"
+#include "eparser/expressions/ast.h"
+#include "eparser/expressions/lexer.h"
 
-namespace eparser { namespace rules {
+namespace eparser { namespace expressions {
 
     template <typename CharT, typename KeyT, typename LessT = std::less<CharT>>
     class parser {
