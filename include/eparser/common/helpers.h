@@ -307,8 +307,10 @@ namespace eparser { namespace common { namespace helpers {
         static std::int64_t read_int(ItrT begin, ItrT end,
                                      int* first_inval = nullptr)
         {
-            std::uint64_t res = 0;
-            *first_inval = -1;
+            std::int64_t res = 0;
+            if (first_inval) {
+                *first_inval = -1;
+            }
 
             int pos = 0;
             for (; begin != end; ++begin) {

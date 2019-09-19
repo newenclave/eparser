@@ -64,7 +64,8 @@ namespace eparser { namespace expressions { namespace objects {
             {
                 static_assert(std::is_base_of<base, T>::value,
                               "T must derive from 'objects::base'");
-                static std::uintptr_t localid = 0xFFEEBBAA;
+                static std::uintptr_t localid
+                    = static_cast<std::uintptr_t>(0xFFEEBBAA);
                 static info sinfo(reinterpret_cast<std::uintptr_t>(&localid),
                                   []() { return std::make_unique<T>(); });
                 return holder { &sinfo };
@@ -75,7 +76,8 @@ namespace eparser { namespace expressions { namespace objects {
             {
                 static_assert(std::is_base_of<base, T>::value,
                               "T must derive from 'objects::base'");
-                static std::uintptr_t localid = 0xAABBCCDD;
+                static std::uintptr_t localid
+                    = static_cast<std::uintptr_t>(0xAABBCCDD);
                 static info sinfo(reinterpret_cast<std::uintptr_t>(&localid),
                                   []() -> std::unique_ptr<T> {
                                       throw std::runtime_error(

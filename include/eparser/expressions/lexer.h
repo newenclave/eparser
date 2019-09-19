@@ -56,7 +56,7 @@ namespace eparser { namespace expressions {
             lexer_.add_factory(makestr("\""), create_string_factory("\"", key));
         }
 
-        void add_string_key(key_type key, const string_type begin,
+        void add_string_key(key_type key, const string_type& begin,
                             const string_type& end)
         {
             lexer_.add_factory(begin, create_string_factory(end, key));
