@@ -2,9 +2,12 @@
 #include "eparser/expressions/objects/operations.h"
 #include "eparser/expressions/parser.h"
 
+#include "ast_to_string.h"
+
 #include <chrono>
 #include <iostream>
 
+using namespace eparser;
 using namespace eparser::common;
 using namespace eparser::expressions;
 
@@ -25,22 +28,7 @@ using postfix_type = typename parser_type::ast_postfix_operation;
 
 int main()
 {
-    transform op;
-
-    op.set<ident_type>([&](auto value) { return value->info().raw_value(); });
-    op.set<value_type>([&](auto value) { return value->info().raw_value(); });
-    op.set<prefix_type>([&](auto value) {
-        return "(" + value->info().value() + " " + op.call(value->value().get())
-            + ")";
-    });
-    op.set<postfix_type>([&](auto value) {
-        return "(" + op.call(value->value().get()) + " " + value->info().value()
-            + ")";
-    });
-    op.set<binop_type>([&](auto value) {
-        return "(" + op.call(value->left().get()) + " " + value->info().value()
-            + " " + op.call(value->right().get()) + ")";
-    });
+    auto op = tests::ast_to_string<char, std::string>("(", ")");
 
     parser_type par;
     std::string test1 = "(ident1-- + 17-- * 89 + [AND] eq 13 eq [eq]) as "
@@ -70,7 +58,7 @@ int main()
         /// std::cout << op.call(vals.get()) << "\n";
     }
 
-    std::cout << op.call(vals.get()) << "\n";
+    std::cout << op->call(vals.get()) << "\n";
     auto stop = std::chrono::high_resolution_clock::now();
 
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(stop
