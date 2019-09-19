@@ -22,22 +22,22 @@ namespace eparser { namespace tests {
         auto op = std::make_unique<transfrom>();
         auto optr = op.get();
 
-        op->set<ident_type>(
+        op->template set<ident_type>(
             [optr](auto value) { return value->info().raw_value(); });
-        op->set<value_type>(
+        op->template set<value_type>(
             [optr](auto value) { return value->info().raw_value(); });
 
-        op->set<prefix_type>([optr, lparen, rparen](auto value) {
+        op->template set<prefix_type>([optr, lparen, rparen](auto value) {
             return lparen + value->info().value() + " "
                 + optr->call(value->value().get()) + rparen;
         });
 
-        op->set<postfix_type>([optr, lparen, rparen](auto value) {
+        op->template set<postfix_type>([optr, lparen, rparen](auto value) {
             return lparen + optr->call(value->value().get()) + " "
                 + value->info().value() + rparen;
         });
 
-        op->set<binop_type>([optr, lparen, rparen](auto value) {
+        op->template set<binop_type>([optr, lparen, rparen](auto value) {
             return lparen + optr->call(value->left().get()) + " "
                 + value->info().value() + " " + optr->call(value->right().get())
                 + rparen;

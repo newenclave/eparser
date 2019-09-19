@@ -67,7 +67,7 @@ namespace eparser { namespace expressions {
             ident_key_ = key;
             ident_reader_ = [this](auto state, auto) {
                 auto begin = current_;
-                current_ = helpers::reader::read_ident(current_, end_);
+                current_ = common::helpers::reader::read_ident(current_, end_);
                 state.set_raw_value(string_type { begin, current_ });
                 state.set_value(string_type { begin, current_ });
                 state.set_key(ident_key_);
@@ -79,7 +79,7 @@ namespace eparser { namespace expressions {
         {
             number_reader_ = [this, key](auto state, auto) {
                 auto begin = current_;
-                current_ = helpers::reader::read_number(current_, end_);
+                current_ = common::helpers::reader::read_number(current_, end_);
                 state.set_raw_value(string_type { begin, current_ });
                 state.set_value(string_type { begin, current_ });
                 state.set_key(key);
@@ -91,7 +91,7 @@ namespace eparser { namespace expressions {
         {
             float_reader_ = [this, key](auto state, auto) {
                 auto begin = current_;
-                current_ = helpers::reader::read_float(begin, end_);
+                current_ = common::helpers::reader::read_float(begin, end_);
                 state.set_raw_value(string_type { begin, current_ });
                 state.set_value(string_type { begin, current_ });
                 state.set_key(key);
@@ -102,7 +102,7 @@ namespace eparser { namespace expressions {
         void set_key(key_type key, const string_type& value,
                      bool force_ident = false)
         {
-            using helpers::reader;
+            using common::helpers::reader;
             bool possible_ident = reader::is_ident(value.begin(), value.end());
             if (possible_ident || force_ident) {
                 lexer_.add_factory(value, create_value_ident_factory(key));
@@ -136,12 +136,12 @@ namespace eparser { namespace expressions {
     private:
         string_type makestr(const std::string& val)
         {
-            return helpers::strings::to_string<CharT>(val);
+            return common::helpers::strings::to_string<CharT>(val);
         }
 
         void skip_spaces()
         {
-            current_ = helpers::reader::skip_spaces(current_, end_);
+            current_ = common::helpers::reader::skip_spaces(current_, end_);
         }
 
         token_info current_token_info()
@@ -164,10 +164,11 @@ namespace eparser { namespace expressions {
 
         auto create_value_ident_factory(key_type key)
         {
+            using common::helpers::reader;
             return [this, key](auto state, auto istate) {
                 current_ = istate.end();
-                if (current_ != end_ && helpers::reader::is_ident(*current_)) {
-                    current_ = helpers::reader::read_ident(current_, end_);
+                if (current_ != end_ && reader::is_ident(*current_)) {
+                    current_ = reader::read_ident(current_, end_);
                     state.set_raw_value(
                         string_type { istate.begin(), current_ });
                     state.set_value(string_type { istate.begin(), current_ });
@@ -190,9 +191,10 @@ namespace eparser { namespace expressions {
 
         factory_type create_string_factory(string_type ending, key_type key)
         {
+            using common::helpers::reader;
             return [this, ending, key](auto state, auto istate) {
                 current_ = istate.end();
-                auto val = helpers::reader::read_string(current_, end_, ending);
+                auto val = reader::read_string(current_, end_, ending);
                 state.set_raw_value({ istate.begin(), current_ });
                 state.set_value(std::move(val));
                 state.set_key(key);
@@ -207,8 +209,9 @@ namespace eparser { namespace expressions {
 
         token_info read_number(token_info state, lexer_state istate)
         {
+            using common::helpers::reader;
             auto begin = current_;
-            if (float_reader_ && helpers::reader::check_if_float(begin, end_)) {
+            if (float_reader_ && reader::check_if_float(begin, end_)) {
                 return float_reader_(std::move(state), std::move(istate));
             } else {
                 return number_reader_(std::move(state), std::move(istate));
@@ -217,11 +220,12 @@ namespace eparser { namespace expressions {
 
         factory_type create_default_factory()
         {
+            using common::helpers::reader;
             return [this](auto state, auto istate) {
                 if (!eof()) {
-                    if (helpers::reader::is_digit(*current_)) {
+                    if (reader::is_digit(*current_)) {
                         return read_number(std::move(state), std::move(istate));
-                    } else if (helpers::reader::is_ident(*current_)) {
+                    } else if (reader::is_ident(*current_)) {
                         return read_ident(std::move(state), std::move(istate));
                     } else {
                         std::stringstream ss;
