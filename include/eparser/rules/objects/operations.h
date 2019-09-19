@@ -5,7 +5,10 @@
 
 #include "eparser/rules/objects/base.h"
 
-namespace eparser { namespace rules { namespace objects { namespace oprerations {
+namespace eparser {
+    namespace rules {
+        namespace objects {
+            namespace oprerations {
 
     template <typename KeyT, typename ResultT = base::uptr>
     class binary {
