@@ -52,7 +52,7 @@ namespace eparser { namespace tests { namespace calc {
 
         parser_type parser;
         parser.set_number_key("num");
-        parser.set_float_key("float");
+        parser.set_float_key("num");
         parser.set_paren_pair("(", "(", ")", ")");
 
         parser.add_binary_operation("+", "+");
@@ -62,6 +62,7 @@ namespace eparser { namespace tests { namespace calc {
         parser.add_prefix_operation("-", "-", 2);
         parser.add_prefix_operation("+", "+", 2);
 
+        std::cout << "Calculator. Write an expression like '2 + 2'\n";
         while (true) {
             std::string value(1024, '\0');
             std::cout << "Enter: ";
@@ -69,8 +70,8 @@ namespace eparser { namespace tests { namespace calc {
             if (value[0] == 'q' || value[0] == 'Q') {
                 break;
             }
-			auto val = parser.run(value.c_str());
-			std::cout << "\t" << op->call(val.get()) << " = ";
+            auto val = parser.run(value.c_str());
+            std::cout << "\t" << op->call(val.get()) << " = ";
             std::cout << calculum.call(val.get()) << "\n";
         }
     }
