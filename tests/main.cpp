@@ -11,10 +11,6 @@ using namespace eparser;
 using namespace eparser::common;
 using namespace eparser::expressions;
 
-struct node {
-    using uptr = std::unique_ptr<node>;
-};
-
 using parser_type = parser<char, std::string>;
 using lexer_type = typename parser_type::lexer_type;
 using operations = objects::oprerations::all<std::string, std::string>;
@@ -26,9 +22,15 @@ using binop_type = typename parser_type::ast_bin_operation;
 using prefix_type = typename parser_type::ast_prefix_operation;
 using postfix_type = typename parser_type::ast_postfix_operation;
 
+namespace eparser { namespace tests { namespace calc {
+    void run();
+}}}
+
 int main()
 {
     auto op = tests::ast_to_string<char, std::string>("(", ")");
+
+    tests::calc::run();
 
     parser_type par;
     std::string test1 = "(ident1-- + 17-- * 89 + [AND] eq 13 eq [eq]) as "
@@ -53,8 +55,9 @@ int main()
     auto start = std::chrono::high_resolution_clock::now();
 
     auto vals = par.run(test1);
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 100000; ++i) {
         vals = par.run(test1);
+        op->call(vals.get());
         /// std::cout << op.call(vals.get()) << "\n";
     }
 
