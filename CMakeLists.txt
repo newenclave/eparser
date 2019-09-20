@@ -19,7 +19,7 @@ list( APPEND src ./include/eparser
 foreach(src_dir ${src})
     aux_source_directory(${src_dir} lib_src)
     file(GLOB headers ${src_dir}/*.h)
-    list(APPEND lib_src ${headers}) 
+    list(APPEND lib_src ${headers})
 endforeach()
 
 add_executable( ${PROJECT_NAME} ${lib_src} )

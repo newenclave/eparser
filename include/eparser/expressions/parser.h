@@ -109,13 +109,13 @@ namespace eparser { namespace expressions {
         {
             auto value = ptr->current();
             return std::make_unique<ast_value>(std::move(value));
-        };
+        }
 
         static node_uptr parse_ident(base_parser* ptr)
         {
             auto value = ptr->current();
             return std::make_unique<ast_ident>(std::move(value));
-        };
+        }
 
         static node_uptr parse_prefix_operation(base_parser* ptr,
                                                 int precedence)
@@ -124,7 +124,7 @@ namespace eparser { namespace expressions {
             ptr->advance();
             return std::make_unique<ast_prefix_operation>(
                 operation, ptr->parse_expression(precedence));
-        };
+        }
 
         static node_uptr parse_binary_operation(base_parser* ptr,
                                                 node_uptr left)
@@ -135,7 +135,7 @@ namespace eparser { namespace expressions {
             auto right = ptr->parse_expression(pp);
             return std::make_unique<ast_bin_operation>(
                 std::move(current), std::move(left), std::move(right));
-        };
+        }
 
         static node_uptr parse_postfix_operation(base_parser* ptr,
                                                  node_uptr left)
@@ -143,7 +143,7 @@ namespace eparser { namespace expressions {
             auto value = ptr->current();
             return std::make_unique<ast_postfix_operation>(std::move(value),
                                                            std::move(left));
-        };
+        }
 
         base_parser parser_;
         lexer_type lexer_;

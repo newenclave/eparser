@@ -222,10 +222,13 @@ namespace eparser { namespace expressions {
         {
             using common::helpers::reader;
             return [this](auto state, auto istate) {
+                bool num_defined = number_reader_ != nullptr
+                        || float_reader_ != nullptr;
+                bool ident_defined = ident_reader_ != nullptr;
                 if (!eof()) {
-                    if (reader::is_digit(*current_)) {
+                    if (num_defined && reader::is_digit(*current_)) {
                         return read_number(std::move(state), std::move(istate));
-                    } else if (reader::is_ident(*current_)) {
+                    } else if (ident_defined && reader::is_ident(*current_)) {
                         return read_ident(std::move(state), std::move(istate));
                     } else {
                         std::stringstream ss;
@@ -276,9 +279,8 @@ namespace eparser { namespace expressions {
         key_type ident_key_ = {};
 
         //// functions;
-        factory_type string_reader_ = create_empty_reader();
-        factory_type number_reader_ = create_empty_reader();
+        factory_type number_reader_ = nullptr;
         factory_type float_reader_ = nullptr;
-        factory_type ident_reader_ = create_empty_reader();
+        factory_type ident_reader_ = nullptr;
     };
 }}

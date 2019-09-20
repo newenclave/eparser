@@ -3,6 +3,8 @@
 #include "eparser/expressions/objects/operations.h"
 #include "eparser/expressions/parser.h"
 #include <iostream>
+#include <numeric>
+#include <cmath>
 
 using namespace eparser;
 using namespace eparser::common;
@@ -45,7 +47,9 @@ namespace eparser { namespace tests { namespace calc {
             case '*':
                 return left_expr * right_expr;
             case '/':
-                return left_expr / right_expr;
+                return right_expr
+                        ? left_expr / right_expr
+                        : std::numeric_limits<double>::infinity();
             }
             return std::nan("");
         });
