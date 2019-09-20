@@ -66,11 +66,11 @@ namespace eparser { namespace tests { namespace calc {
             std::string value(1024, '\0');
             std::cout << "Enter: ";
             std::cin.getline(&value[0], 1024);
-            auto val = parser.run(value.c_str());
             if (value[0] == 'q' || value[0] == 'Q') {
                 break;
             }
-            std::cout << "\t" << op->call(val.get()) << " = ";
+			auto val = parser.run(value.c_str());
+			std::cout << "\t" << op->call(val.get()) << " = ";
             std::cout << calculum.call(val.get()) << "\n";
         }
     }
