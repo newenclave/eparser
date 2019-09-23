@@ -2,9 +2,9 @@
 #include "eparser/expressions/ast.h"
 #include "eparser/expressions/objects/operations.h"
 #include "eparser/expressions/parser.h"
+#include <cmath>
 #include <iostream>
 #include <numeric>
-#include <cmath>
 
 using namespace eparser;
 using namespace eparser::common;
@@ -47,9 +47,8 @@ namespace eparser { namespace tests { namespace calc {
             case '*':
                 return left_expr * right_expr;
             case '/':
-                return right_expr
-                        ? left_expr / right_expr
-                        : std::numeric_limits<double>::infinity();
+                return right_expr ? left_expr / right_expr
+                                  : std::numeric_limits<double>::infinity();
             }
             return std::nan("");
         });
@@ -74,9 +73,16 @@ namespace eparser { namespace tests { namespace calc {
             if (value[0] == 'q' || value[0] == 'Q') {
                 break;
             }
-            auto val = parser.run(value.c_str());
-            std::cout << "\t" << op->call(val.get()) << " = ";
-            std::cout << calculum.call(val.get()) << "\n";
+            try {
+                auto val = parser.run(value.c_str());
+                std::cout << "\t" << op->call(val.get()) << " = ";
+                std::cout << calculum.call(val.get()) << "\n";
+            }
+            catch (const std::exception& ex) {
+                std::cerr << "\tFaild to evaluate string '" << value.c_str()
+                          << "'. "
+                          << "Error: " << ex.what() << "\n";
+            }
         }
     }
 

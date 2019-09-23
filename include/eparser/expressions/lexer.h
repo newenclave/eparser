@@ -21,6 +21,7 @@ namespace eparser { namespace expressions {
         using token_info = common::token_info<char_type, key_type>;
         using factory_type = typename lexer_type::token_state_factory;
         using lexer_state = typename lexer_type::internal_state;
+        using exception = common::lexer_error<char_type, key_type>;
 
         lexer(const lexer&) = delete;
         lexer& operator=(const lexer&) = delete;
@@ -222,8 +223,8 @@ namespace eparser { namespace expressions {
         {
             using common::helpers::reader;
             return [this](auto state, auto istate) {
-                bool num_defined = number_reader_ != nullptr
-                        || float_reader_ != nullptr;
+                bool num_defined
+                    = number_reader_ != nullptr || float_reader_ != nullptr;
                 bool ident_defined = ident_reader_ != nullptr;
                 if (!eof()) {
                     if (num_defined && reader::is_digit(*current_)) {
@@ -235,7 +236,7 @@ namespace eparser { namespace expressions {
                         ss << "Unexpected symbol '" << *current_ << "' "
                            << " at " << state.pos().line << ":"
                            << state.pos().pos;
-                        throw std::runtime_error(ss.str());
+                        throw exception(ss.str(), state);
                     }
                 }
                 return state;
