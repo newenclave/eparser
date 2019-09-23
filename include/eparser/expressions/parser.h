@@ -1,4 +1,5 @@
 #pragma once
+#include "eparser/common/exceptions.h"
 #include "eparser/common/parser_base.h"
 #include "eparser/expressions/ast.h"
 #include "eparser/expressions/lexer.h"
@@ -25,6 +26,24 @@ namespace eparser { namespace expressions {
         using ast_prefix_operation = ast::ptefix_operation<char_type, key_type>;
         using ast_postfix_operation
             = ast::postfix_operation<char_type, key_type>;
+
+        parser()
+        {
+            parser_.set_default_nud([](auto ptr) -> node_uptr {
+                std::stringstream ss;
+                ss << "No NUD function defined for the value.";
+                throw common::parser_error<char_type, key_type>(ss.str(),
+                                                                ptr->current());
+                return {};
+            });
+            parser_.set_default_led([](auto ptr, auto state) -> node_uptr {
+                std::stringstream ss;
+                ss << "No LED function defined for the value.";
+                throw common::parser_error<char_type, key_type>(ss.str(),
+                                                                ptr->current());
+                return {};
+            });
+        }
 
         void set_ident_key(key_type key)
         {
