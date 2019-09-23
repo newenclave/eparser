@@ -22,20 +22,20 @@ namespace eparser { namespace expressions { namespace objects {
 
         private:
             template <typename LeftT, typename RightT, typename CallT>
-            static function_type create_call(CallT call)
+            static function_type create_call(CallT fn)
             {
-                return [call](auto left, auto right) {
-                    return call(base::cast<LeftT>(left),
-                                base::cast<RightT>(right));
+                return [fn](auto left, auto right) {
+                    return fn(base::cast<LeftT>(left),
+                              base::cast<RightT>(right));
                 };
             }
 
             template <typename LeftT, typename RightT, typename CallT>
-            static function_type create_reverse_call(CallT call)
+            static function_type create_reverse_call(CallT fn)
             {
-                return [call](auto left, auto right) {
-                    return call(base::cast<LeftT>(right),
-                                base::cast<RightT>(left));
+                return [fn](auto left, auto right) {
+                    return fn(base::cast<LeftT>(right),
+                              base::cast<RightT>(left));
                 };
             }
 
@@ -55,8 +55,8 @@ namespace eparser { namespace expressions { namespace objects {
 
             result_type call(key_type op, base::ptr left, base::ptr right)
             {
-                if (auto call = get(op, left, right)) {
-                    return call(left, right);
+                if (auto fn = get(op, left, right)) {
+                    return fn(left, right);
                 }
                 return {};
             }
@@ -75,6 +75,15 @@ namespace eparser { namespace expressions { namespace objects {
                 auto find = bin_map_.find(id);
                 if (find != bin_map_.end()) {
                     return find->second;
+                }
+                return {};
+            }
+
+            std::function<result_type()> wrap(key_type op, base::ptr left,
+                                              base::ptr right)
+            {
+                if (auto fn = get(op, left, right)) {
+                    return [fn, left, right]() { return fn(left, right); };
                 }
                 return {};
             }
@@ -113,24 +122,23 @@ namespace eparser { namespace expressions { namespace objects {
 
         private:
             template <typename ValueT, typename CallT>
-            static function_type create_call(CallT call)
+            static function_type create_call(CallT fn)
             {
-                return
-                    [call](auto obj) { return call(base::cast<ValueT>(obj)); };
+                return [fn](auto obj) { return fn(base::cast<ValueT>(obj)); };
             }
 
         public:
             template <typename ValueT, typename CallT>
-            void set(key_type op, CallT call)
+            void set(key_type op, CallT fn)
             {
                 set_impl(op, base::info::create<ValueT>(),
-                         create_call<ValueT, CallT>(std::move(call)));
+                         create_call<ValueT, CallT>(std::move(fn)));
             }
 
             result_type call(key_type op, base::ptr value)
             {
-                if (auto call = get(op, value)) {
-                    return call(value);
+                if (auto fn = get(op, value)) {
+                    return fn(value);
                 }
                 return {};
             }
@@ -147,6 +155,14 @@ namespace eparser { namespace expressions { namespace objects {
                 auto find = un_map_.find(id);
                 if (find != un_map_.end()) {
                     return find->second;
+                }
+                return {};
+            }
+
+            std::function<result_type()> wrap(key_type op, base::ptr value)
+            {
+                if (auto fn = get(op, value)) {
+                    return [fn, value]() { return fn(value); };
                 }
                 return {};
             }
@@ -182,18 +198,17 @@ namespace eparser { namespace expressions { namespace objects {
 
         private:
             template <typename ValueT, typename CallT>
-            static function_type create_unary_call(CallT call)
+            static function_type create_unary_call(CallT fn)
             {
-                return
-                    [call](auto obj) { return call(base::cast<ValueT>(obj)); };
+                return [fn](auto obj) { return fn(base::cast<ValueT>(obj)); };
             }
 
         public:
             template <typename FromT, typename ToT, typename CallT>
-            void set(CallT call)
+            void set(CallT fn)
             {
                 set_impl(base::info::create<FromT>(), base::info::create<ToT>(),
-                         create_unary_call<FromT>(std::move(call)));
+                         create_unary_call<FromT>(std::move(fn)));
             }
 
             template <typename ToT>
@@ -219,6 +234,15 @@ namespace eparser { namespace expressions { namespace objects {
                     return [call](auto value) {
                         return base::cast<ToT>(call(value));
                     };
+                }
+                return {};
+            }
+
+            template <typename ToT>
+            std::function<std::unique_ptr<ToT>()> wrap(base::ptr value)
+            {
+                if (auto fn = get<ToT>(value)) {
+                    return [fn, value]() { return fn(value); };
                 }
                 return {};
             }
@@ -258,24 +282,23 @@ namespace eparser { namespace expressions { namespace objects {
 
         private:
             template <typename ValueT, typename CallT>
-            static function_type create_unary_call(CallT call)
+            static function_type create_unary_call(CallT fn)
             {
-                return
-                    [call](auto obj) { return call(base::cast<ValueT>(obj)); };
+                return [fn](auto obj) { return fn(base::cast<ValueT>(obj)); };
             }
 
         public:
             template <typename FromT, typename CallT>
-            void set(CallT call)
+            void set(CallT fn)
             {
                 auto id = base::info::create<FromT>();
-                calls_[id] = create_unary_call<FromT>(std::move(call));
+                calls_[id] = create_unary_call<FromT>(std::move(fn));
             }
 
             result_type call(base::ptr value)
             {
-                if (auto call_val = get(value)) {
-                    return call_val(value);
+                if (auto fn = get(value)) {
+                    return fn(value);
                 }
                 return {};
             }
@@ -286,6 +309,14 @@ namespace eparser { namespace expressions { namespace objects {
                 auto itr = calls_.find(inf);
                 if (itr != calls_.end()) {
                     return itr->second;
+                }
+                return {};
+            }
+
+            function_type wrap(base::ptr value)
+            {
+                if (auto fn = get(value)) {
+                    return [fn, value]() { return fn(vaue); };
                 }
                 return {};
             }

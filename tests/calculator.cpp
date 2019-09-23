@@ -21,39 +21,64 @@ namespace eparser { namespace tests { namespace calc {
 
     using operations = objects::oprerations::all<std::string, double>;
     using transfrom = typename operations::transfrom_type;
+    using binary = typename operations::binary_type;
 
     void run()
     {
+        std::map<std::string, double> env;
         auto op = tests::ast_to_string<char, std::string>("(", ")");
         transfrom calculum;
+        binary bin;
+
+        calculum.set<ident_type>([&](auto value) {
+            auto itr = env.find(value->info().value());
+            if (itr != env.end()) {
+                return itr->second;
+            }
+            throw std::runtime_error("No value for '" + value->info().value()
+                                     + "'");
+        });
 
         calculum.set<value_type>([&](auto value) {
             return std::atof(value->info().value().c_str());
         });
+
         calculum.set<prefix_type>([&](auto value) {
             if (value->info().value() == "-") {
                 return -1 * calculum.call(value->value().get());
             }
             return calculum.call(value->value().get());
         });
+
+        bin.set<ident_type, value_type>("=", [&](auto ident, auto value) {
+            auto right_expr = calculum.call(value);
+            return env[ident->info().value()] = right_expr;
+        });
+
         calculum.set<binop_type>([&](auto value) {
-            auto left_expr = calculum.call(value->left().get());
-            auto right_expr = calculum.call(value->right().get());
-            switch (value->info().value()[0]) {
-            case '-':
-                return left_expr - right_expr;
-            case '+':
-                return left_expr + right_expr;
-            case '*':
-                return left_expr * right_expr;
-            case '/':
-                return right_expr ? left_expr / right_expr
-                                  : std::numeric_limits<double>::infinity();
+            if (auto call = bin.wrap(value->info().value(), value->left().get(),
+                                     value->right().get())) {
+                return call();
+            } else {
+                auto left_expr = calculum.call(value->left().get());
+                auto right_expr = calculum.call(value->right().get());
+                switch (value->info().value()[0]) {
+                case '-':
+                    return left_expr - right_expr;
+                case '+':
+                    return left_expr + right_expr;
+                case '*':
+                    return left_expr * right_expr;
+                case '/':
+                    return right_expr ? left_expr / right_expr
+                                      : std::numeric_limits<double>::infinity();
+                }
             }
             return std::nan("");
         });
 
         parser_type parser;
+        parser.set_ident_key("iden");
         parser.set_number_key("num");
         parser.set_float_key("num");
         parser.set_paren_pair("(", "(", ")", ")");
@@ -62,6 +87,8 @@ namespace eparser { namespace tests { namespace calc {
         parser.add_binary_operation("-", "-");
         parser.add_binary_operation("*", "*", 1);
         parser.add_binary_operation("/", "/", 1);
+        parser.add_binary_operation("=", "=", 3);
+
         parser.add_prefix_operation("-", "-", 2);
         parser.add_prefix_operation("+", "+", 2);
 
