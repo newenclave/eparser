@@ -17,6 +17,7 @@ namespace eparser { namespace expressions {
             = common::parser_base<node_type, char_type, key_type, less_type>;
         using string_type = std::basic_string<char_type>;
         using lexer_type = lexer<char_type, key_type, less_type>;
+        using error_type = common::parser_error<char_type, key_type>;
 
         using ast_node = ast::node<char_type, key_type>;
         using node_uptr = typename ast_node::uptr;
@@ -32,15 +33,13 @@ namespace eparser { namespace expressions {
             parser_.set_default_nud([](auto ptr) -> node_uptr {
                 std::stringstream ss;
                 ss << "No NUD function defined for the value.";
-                throw common::parser_error<char_type, key_type>(ss.str(),
-                                                                ptr->current());
+                throw error_type(ss.str(), ptr->current());
                 return {};
             });
             parser_.set_default_led([](auto ptr, auto state) -> node_uptr {
                 std::stringstream ss;
                 ss << "No LED function defined for the value.";
-                throw common::parser_error<char_type, key_type>(ss.str(),
-                                                                ptr->current());
+                throw error_type(ss.str(), ptr->current());
                 return {};
             });
         }
