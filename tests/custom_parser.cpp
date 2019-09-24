@@ -76,7 +76,13 @@ namespace eparser { namespace tests { namespace custom_parser {
         // custom parser operation for sequence [a, b, c, d, ...]
         parser.add_nud_operation("[", "[", [](auto ptr) {
             std::vector<base::uptr> values;
+            // we start parsing the expression with the tocken
+            // we defined for the expression. '['
+            // so in 'current' we have this token and have to anvance the
+            // parser's state
             ptr->advance();
+
+            // the expecting ending is ']'
             while (!ptr->is_current("]")) {
                 values.emplace_back(ptr->parse_expression());
                 ptr->expect(",");
