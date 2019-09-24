@@ -55,14 +55,25 @@ namespace eparser { namespace tests { namespace custom_parser {
     {
         parser_type parser;
 
+        // let lexer know we want to read idents.
         parser.set_ident_key("ident");
+
+        // let lexer know we want to read numbers.
         parser.set_number_key("num");
         parser.set_float_key("num");
 
+        // adding a couple of tokens without any parsing function
         parser.set_key(",", ",");
         parser.set_key("]", "]");
 
-        /// custom parser operation for sequence [a, b, c, d, ...]
+        // adding a couple of operators
+        parser.add_binary_operation("+", "+");
+        parser.add_binary_operation("-", "-");
+        parser.add_binary_operation("*", "*", 1);
+        parser.add_binary_operation("/", "/", 1);
+        parser.set_paren_pair("(", "(", ")", ")");
+
+        // custom parser operation for sequence [a, b, c, d, ...]
         parser.add_nud_operation("[", "[", [](auto ptr) {
             std::vector<base::uptr> values;
             ptr->advance();
@@ -76,11 +87,9 @@ namespace eparser { namespace tests { namespace custom_parser {
             return result;
         });
 
-        std::string test = "[a, b, c, d, e, 19, 54.90, A]";
-        auto res = parser.run(test);
         auto op = ast_to_string<char, std::string>("(", ")");
 
-        /// to string transformer for our custom type
+        // to string transformer for our custom type
         op->set<custom_node>([&](auto custom) {
             std::stringstream ss;
             ss << "[";
@@ -96,9 +105,21 @@ namespace eparser { namespace tests { namespace custom_parser {
             return ss.str();
         });
 
-        std::cout << "Test sequence is: \"" << test << "\".\n";
-
-        std::cout << "Result is:        \"" << op->call(res.get()) << "\"\n";
+        std::cout << "In expressions you can use idents, numbers and []\n";
+        while (true) {
+            std::string value(1024, '\0');
+            std::cout << "Input an expression: ";
+            std::cin.getline(&value[0], value.size());
+            try {
+                auto res = parser.run(value.c_str());
+                std::cout << "\t" << op->call(res.get()) << "\n";
+            }
+            catch (const std::exception& ex) {
+                std::cerr << "\tFaild to evaluate string '" << value.c_str()
+                          << "'. "
+                          << "Error: " << ex.what() << "\n";
+            }
+        }
     }
 
 }}}
