@@ -72,6 +72,11 @@ namespace eparser { namespace tests { namespace calc {
                 case '/':
                     return right_expr ? left_expr / right_expr
                                       : std::numeric_limits<double>::infinity();
+                case '%':
+                    return right_expr ? static_cast<double>(
+                               static_cast<std::int64_t>(left_expr)
+                               % static_cast<std::int64_t>(right_expr))
+                                      : std::numeric_limits<double>::infinity();
                 }
             }
             return std::nan("");
@@ -87,6 +92,7 @@ namespace eparser { namespace tests { namespace calc {
         parser.add_binary_operation("-", "-");
         parser.add_binary_operation("*", "*", 1);
         parser.add_binary_operation("/", "/", 1);
+        parser.add_binary_operation("%", "%", 1);
         parser.add_binary_operation("=", "=", 3);
 
         parser.add_prefix_operation("-", "-", 2);

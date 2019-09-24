@@ -86,6 +86,11 @@ namespace eparser { namespace common {
             precedenses_[id] = value;
         }
 
+        node_type parse_expression()
+        {
+            return parse_expression(-1);
+        }
+
         node_type parse_expression(int p)
         {
             auto nud = nuds_.find(current().key());
@@ -154,6 +159,11 @@ namespace eparser { namespace common {
         lexem_type current() const
         {
             return eof() ? lexem_type {} : *current_;
+        }
+
+        bool is_current(key_type id) const
+        {
+            return current_->key() == id;
         }
 
         lexem_type next() const

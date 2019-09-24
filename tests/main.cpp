@@ -1,9 +1,14 @@
 #include <chrono>
 #include <iostream>
 
-namespace eparser { namespace tests { namespace calc {
-    void run();
-}}}
+namespace eparser { namespace tests {
+    namespace calc {
+        void run();
+    }
+    namespace custom_parser {
+        void run();
+    }
+}}
 
 int main(int argc, char* argv[])
 {
@@ -17,6 +22,8 @@ int main(int argc, char* argv[])
 
     if (name == "calc") {
         eparser::tests::calc::run();
+    } else if (name == "custom") {
+        eparser::tests::custom_parser::run();
     }
 
     return 0;

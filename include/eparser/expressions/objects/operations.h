@@ -316,7 +316,7 @@ namespace eparser { namespace expressions { namespace objects {
             function_type wrap(base::ptr value)
             {
                 if (auto fn = get(value)) {
-                    return [fn, value]() { return fn(vaue); };
+                    return [fn, value]() { return fn(value); };
                 }
                 return {};
             }

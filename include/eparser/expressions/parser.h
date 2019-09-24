@@ -28,6 +28,9 @@ namespace eparser { namespace expressions {
         using ast_postfix_operation
             = ast::postfix_operation<char_type, key_type>;
 
+        using led_call_type = typename base_parser::led_call_type;
+        using nud_call_type = typename base_parser::nud_call_type;
+
         parser()
         {
             parser_.set_default_nud([](auto ptr) -> node_uptr {
@@ -64,11 +67,16 @@ namespace eparser { namespace expressions {
             parser_.set_nud(key, parse_value);
             lexer_.set_string_key(std::move(key));
         }
+        void set_value_key(key_type key, const string_type& value,
+                           bool force_ident = false)
+        {
+            lexer_.set_key(key, value, force_ident);
+            parser_.set_nud(key, parse_value);
+        }
         void set_key(key_type key, const string_type& value,
                      bool force_ident = false)
         {
             lexer_.set_key(key, value, force_ident);
-            parser_.set_nud(key, parse_value);
         }
 
         void add_string_key(key_type key, const string_type& begin,
@@ -89,6 +97,21 @@ namespace eparser { namespace expressions {
             });
             lexer_.set_key(std::move(left_key), left_val);
             lexer_.set_key(std::move(right_key), right_val);
+        }
+
+        void add_nud_operation(key_type key, const string_type& value,
+                               nud_call_type fn)
+        {
+            lexer_.set_key(key, value);
+            parser_.set_nud(key, fn);
+        }
+
+        void add_led_operation(key_type key, const string_type& value,
+                               led_call_type fn, int precedence = 0)
+        {
+            lexer_.set_key(key, value);
+            parser_.set_precedense(key, precedence);
+            parser_.set_led(key, fn);
         }
 
         void add_binary_operation(key_type key, const string_type& value,
