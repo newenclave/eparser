@@ -16,7 +16,7 @@ namespace eparser { namespace common {
         using less_type = LessT;
 
         using lexer_type = lexer_base<char_type, key_type, less_type>;
-        using lexem_type = typename lexer_type::token_info;
+        using token_type = typename lexer_type::token_info;
         using string_type = typename lexer_type::string_type;
 
         using this_type
@@ -24,14 +24,14 @@ namespace eparser { namespace common {
 
         class state {
             friend class parser_base;
-            state(typename std::vector<lexem_type>::const_iterator current,
-                  typename std::vector<lexem_type>::const_iterator next)
+            state(typename std::vector<token_type>::const_iterator current,
+                  typename std::vector<token_type>::const_iterator next)
             {
                 current_ = current;
                 next_ = next;
             }
-            typename std::vector<lexem_type>::const_iterator current_;
-            typename std::vector<lexem_type>::const_iterator next_;
+            typename std::vector<token_type>::const_iterator current_;
+            typename std::vector<token_type>::const_iterator next_;
         };
 
         using led_call_type = std::function<node_type(this_type*, node_type)>;
@@ -40,24 +40,24 @@ namespace eparser { namespace common {
         virtual ~parser_base() = default;
 
         parser_base()
-            : current_(lexem_.begin())
-            , next_(lexem_.begin())
+            : current_(tokens_.begin())
+            , next_(tokens_.begin())
         {
         }
 
-        parser_base(std::vector<lexem_type> lexem)
-            : lexem_(std::move(lexem))
-            , current_(lexem_.begin())
-            , next_(lexem_.begin())
+        parser_base(std::vector<token_type> lexem)
+            : tokens_(std::move(lexem))
+            , current_(tokens_.begin())
+            , next_(tokens_.begin())
         {
             advance();
         }
 
-        void reset(std::vector<lexem_type> lexem)
+        void reset(std::vector<token_type> lexem)
         {
-            lexem_ = std::move(lexem);
-            current_ = lexem_.begin();
-            next_ = lexem_.begin();
+            tokens_ = std::move(lexem);
+            current_ = tokens_.begin();
+            next_ = tokens_.begin();
             advance();
         }
 
@@ -106,7 +106,7 @@ namespace eparser { namespace common {
             }
 
             int pp = next_precednse();
-            lexem_type pt = next();
+            token_type pt = next();
             while (p < pp) {
                 led_call_type led_call = [this](auto, auto left) {
                     return default_led(std::move(left));
@@ -148,17 +148,17 @@ namespace eparser { namespace common {
 
         bool eof() const
         {
-            return current_ == lexem_.cend();
+            return current_ == tokens_.cend();
         }
 
         bool next_eof() const
         {
-            return next_ == lexem_.cend();
+            return next_ == tokens_.cend();
         }
 
-        lexem_type current() const
+        token_type current() const
         {
-            return eof() ? lexem_type {} : *current_;
+            return eof() ? token_type {} : *current_;
         }
 
         bool is_current(key_type id) const
@@ -166,9 +166,9 @@ namespace eparser { namespace common {
             return current_->key() == id;
         }
 
-        lexem_type next() const
+        token_type next() const
         {
-            return next_eof() ? lexem_type {} : *next_;
+            return next_eof() ? token_type {} : *next_;
         }
 
         int current_precednse()
@@ -204,9 +204,9 @@ namespace eparser { namespace common {
         }
 
     private:
-        int itr_precednse(typename std::vector<lexem_type>::const_iterator itr)
+        int itr_precednse(typename std::vector<token_type>::const_iterator itr)
         {
-            if (itr == lexem_.cend()) {
+            if (itr == tokens_.cend()) {
                 return -1;
             }
             auto found = precedenses_.find(itr->key());
@@ -220,9 +220,9 @@ namespace eparser { namespace common {
         led_call_type default_led_;
 
         std::map<key_type, int> precedenses_;
-        std::vector<lexem_type> lexem_;
-        typename std::vector<lexem_type>::const_iterator current_;
-        typename std::vector<lexem_type>::const_iterator next_;
+        std::vector<token_type> tokens_;
+        typename std::vector<token_type>::const_iterator current_;
+        typename std::vector<token_type>::const_iterator next_;
     };
 
 }}
