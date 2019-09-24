@@ -2,41 +2,40 @@
 
 Small expression parser.
 
-## a calculator example 
+## a calculator example
 
 see tests/calculator.cpp
+
+### Available operators
+
+```
++, -, *, /, %, =, :=
+```
+
+#### = and :=
+
+The operators bind values to names. Operator `=` creates a constant while `:=` makes a variable that is evaluated any time it's present in the expression.
+
+```
+Enter: x = 0
+    (x = 0) = 0
+Enter: y = 0
+    (y = 0) = 0
+Enter: z:= x*x + 2 * x *y +y
+    (z := (((x * x) + ((2 * x) * y)) + y)) = 0
+Enter: x = 45
+    (x = 45) = 45
+Enter: z
+    z = 2025
+Enter: y = 10
+    (y = 10) = 10
+Enter: z
+    z = 2935
+```
 
 ```
 Enter: 2 + 2 * 2
         (2 + (2 * 2)) = 6
 Enter: (2 + 2) * 2
         ((2 + 2) * 2) = 8
-Enter: 11.11 / 45.9 * 5467 + 321 - 1024 / 234 * 43
-        ((((11.11 / 45.9) * 5467) + 321) - ((1024 / 234) * 43)) = 1456.11
-Enter: x = 10
-        (x = 10) = 10
-Enter: y = 20
-        (y = 20) = 20
-Enter: z = 30
-        (z = 30) = 30
-Enter: x + y * z
-        (x + (y * z)) = 610
-Enter: -x
-        (- x) = -10
-Enter: -(-x)
-        (- (- x)) = 10
-Enter: x - y
-        (x - y) = -10
-Enter: none = 0
-        (none = 0) = 0
-Enter: x / none
-        (x / none) = inf
-Enter: none / 0
-        (none / 0) = inf
-Enter: (k=11.11) + 22.22
-        ((k = 11.11) + 22.22 ) = 33.33
-Enter: k
-        k = 11.11
-Enter: q
-
 ```

@@ -25,15 +25,20 @@ namespace eparser { namespace tests { namespace calc {
 
     void run()
     {
-        std::map<std::string, double> env;
+        std::map<std::string, objects::base::uptr> env;
+        std::map<std::string, double> constants;
+
         auto op = tests::ast_to_string<char, std::string>("(", ")");
         transfrom calculum;
         binary bin;
 
         calculum.set<ident_type>([&](auto value) {
             auto itr = env.find(value->info().value());
+            auto itrc = constants.find(value->info().value());
             if (itr != env.end()) {
-                return itr->second;
+                return calculum.call(itr->second.get());
+            } else if (itrc != constants.end() ) {
+                return itrc->second;
             }
             throw std::runtime_error("No value for '" + value->info().value()
                                      + "'");
@@ -50,19 +55,24 @@ namespace eparser { namespace tests { namespace calc {
             return calculum.call(value->value().get());
         });
 
-        bin.set<ident_type, value_type>("=", [&](auto ident, auto value) {
-            auto right_expr = calculum.call(value);
-            return env[ident->info().value()] = right_expr;
-        });
-
         calculum.set<binop_type>([&](auto value) {
-            if (auto call = bin.wrap(value->info().value(), value->left().get(),
-                                     value->right().get())) {
-                return call();
+            auto left = value->left().get();
+            auto right = value->right().get();
+            auto oper = value->info().value();
+            if(left->info().key() == "ident" && (oper == "=" || oper == ":=")) {
+                auto res = calculum.call(right);
+                constants.erase(left->info().value());
+                env.erase(left->info().value());
+                if(oper == "=") {
+                    constants[left->info().value()] = res;
+                } else {
+                    env[left->info().value()] = right->clone();
+                }
+                return res;
             } else {
-                auto left_expr = calculum.call(value->left().get());
-                auto right_expr = calculum.call(value->right().get());
-                switch (value->info().value()[0]) {
+                auto left_expr = calculum.call(left);
+                auto right_expr = calculum.call(right);
+                switch (oper[0]) {
                 case '-':
                     return left_expr - right_expr;
                 case '+':
@@ -83,17 +93,18 @@ namespace eparser { namespace tests { namespace calc {
         });
 
         parser_type parser;
-        parser.set_ident_key("iden");
+        parser.set_ident_key("ident");
         parser.set_number_key("num");
         parser.set_float_key("num");
         parser.set_paren_pair("(", "(", ")", ")");
 
-        parser.add_binary_operation("+", "+");
-        parser.add_binary_operation("-", "-");
-        parser.add_binary_operation("*", "*", 1);
-        parser.add_binary_operation("/", "/", 1);
-        parser.add_binary_operation("%", "%", 1);
-        parser.add_binary_operation("=", "=", 3);
+        parser.add_binary_operation("+", "+",   1);
+        parser.add_binary_operation("-", "-",   1);
+        parser.add_binary_operation("*", "*",   2);
+        parser.add_binary_operation("/", "/",   2);
+        parser.add_binary_operation("%", "%",   2);
+        parser.add_binary_operation("=", "=",   0);
+        parser.add_binary_operation(":=", ":=", 0);
 
         parser.add_prefix_operation("-", "-", 2);
         parser.add_prefix_operation("+", "+", 2);
