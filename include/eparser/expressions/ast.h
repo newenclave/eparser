@@ -35,7 +35,7 @@ namespace eparser { namespace expressions { namespace ast {
             return name_.c_str();
         }
 
-        const token_info& info() const
+        const token_info& token() const
         {
             return info_;
         }
@@ -80,7 +80,7 @@ namespace eparser { namespace expressions { namespace ast {
 
         objects::base::uptr clone() const override
         {
-            return std::make_unique<this_type>(this->info());
+            return std::make_unique<this_type>(this->token());
         }
     };
 
@@ -108,7 +108,7 @@ namespace eparser { namespace expressions { namespace ast {
 
         objects::base::uptr clone() const override
         {
-            return std::make_unique<this_type>(this->info());
+            return std::make_unique<this_type>(this->token());
         }
     };
 
@@ -140,7 +140,7 @@ namespace eparser { namespace expressions { namespace ast {
         objects::base::uptr clone() const override
         {
             return std::make_unique<this_type>(
-                this->info(), super_type::cast(left_->clone()),
+                this->token(), super_type::cast(left_->clone()),
                 super_type::cast(right_->clone()));
         }
 
@@ -210,7 +210,7 @@ namespace eparser { namespace expressions { namespace ast {
         objects::base::uptr clone() const override
         {
             return std::make_unique<this_type>(
-                this->info(), node_type::cast(this->value_->clone()));
+                this->token(), node_type::cast(this->value_->clone()));
         }
     };
 
@@ -241,7 +241,7 @@ namespace eparser { namespace expressions { namespace ast {
         objects::base::uptr clone() const override
         {
             return std::make_unique<this_type>(
-                this->info(), node_type::cast(this->value_->clone()));
+                this->token(), node_type::cast(this->value_->clone()));
         }
     };
 }}}

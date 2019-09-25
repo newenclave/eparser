@@ -40,7 +40,7 @@ namespace eparser { namespace expressions { namespace objects {
                 const info* info_;
             };
             info(std::uintptr_t i, std::function<base::uptr()> factory)
-                : id(i)
+                : id_(i)
                 , factory_(std::move(factory))
             {
             }
@@ -56,7 +56,10 @@ namespace eparser { namespace expressions { namespace objects {
                 return create_impl<T>(std::is_abstract<T> {});
             }
 
-            std::uintptr_t id = 0;
+            std::uintptr_t id() const
+            {
+                return id_;
+            }
 
         private:
             template <typename T>
@@ -85,7 +88,7 @@ namespace eparser { namespace expressions { namespace objects {
                                   });
                 return holder { &sinfo };
             }
-
+            std::uintptr_t id_ = 0;
             std::function<base::uptr()> factory_;
         };
 
@@ -134,7 +137,7 @@ namespace eparser { namespace expressions { namespace objects {
 
         std::uintptr_t type_id() const
         {
-            return info_->id;
+            return info_->id();
         }
 
         info::holder type_info() const
@@ -149,14 +152,14 @@ namespace eparser { namespace expressions { namespace objects {
         template <typename T>
         constexpr static bool is_base()
         {
-            return info::create<T>()->id == info::create<base>()->id;
+            return info::create<T>()->id() == info::create<base>()->id();
         }
 
         template <typename T>
         static void assert_type(base::cptr p)
         {
             if (!is_base<T>()
-                && (p->type_info()->id != info::create<T>()->id)) {
+                && (p->type_info()->id() != info::create<T>()->id())) {
                 throw std::runtime_error("object is nor base neither T");
             }
         }
@@ -168,6 +171,6 @@ namespace eparser { namespace expressions { namespace objects {
     inline bool operator<(const base::info::holder& lh,
                           const base::info::holder& rh)
     {
-        return lh.type_info()->id < rh.type_info()->id;
+        return lh.type_info()->id() < rh.type_info()->id();
     }
 }}}

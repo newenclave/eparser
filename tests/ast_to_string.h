@@ -23,24 +23,24 @@ namespace eparser { namespace tests {
         auto optr = op.get();
 
         op->template set<ident_type>(
-            [optr](auto value) { return value->info().raw_value(); });
+            [optr](auto value) { return value->token().raw_value(); });
         op->template set<value_type>(
-            [optr](auto value) { return value->info().raw_value(); });
+            [optr](auto value) { return value->token().raw_value(); });
 
         op->template set<prefix_type>([optr, lparen, rparen](auto value) {
-            return lparen + value->info().value() + " "
+            return lparen + value->token().value() + " "
                 + optr->call(value->value().get()) + rparen;
         });
 
         op->template set<postfix_type>([optr, lparen, rparen](auto value) {
             return lparen + optr->call(value->value().get()) + " "
-                + value->info().value() + rparen;
+                + value->token().value() + rparen;
         });
 
         op->template set<binop_type>([optr, lparen, rparen](auto value) {
             return lparen + optr->call(value->left().get()) + " "
-                + value->info().value() + " " + optr->call(value->right().get())
-                + rparen;
+                + value->token().value() + " "
+                + optr->call(value->right().get()) + rparen;
         });
         return op;
     }

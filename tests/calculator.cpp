@@ -34,23 +34,23 @@ namespace eparser { namespace tests { namespace calc {
         binary bin;
 
         calculum.set<ident_type>([&](auto value) {
-            auto itr = env.find(value->info().value());
-            auto itrc = constants.find(value->info().value());
+            auto itr = env.find(value->token().value());
+            auto itrc = constants.find(value->token().value());
             if (itr != env.end()) {
                 return calculum.call(itr->second.get());
             } else if (itrc != constants.end()) {
                 return itrc->second;
             }
-            throw std::runtime_error("No value for '" + value->info().value()
+            throw std::runtime_error("No value for '" + value->token().value()
                                      + "'");
         });
 
         calculum.set<value_type>([&](auto value) {
-            return std::atof(value->info().value().c_str());
+            return std::atof(value->token().value().c_str());
         });
 
         calculum.set<prefix_type>([&](auto value) {
-            if (value->info().value() == "-") {
+            if (value->token().value() == "-") {
                 return -1 * calculum.call(value->value().get());
             }
             return calculum.call(value->value().get());
@@ -59,16 +59,16 @@ namespace eparser { namespace tests { namespace calc {
         calculum.set<binop_type>([&](auto value) {
             auto left = value->left().get();
             auto right = value->right().get();
-            auto oper = value->info().key();
-            if (left->info().key() == "ident"
+            auto oper = value->token().key();
+            if (left->token().key() == "ident"
                 && (oper == "=" || oper == ":=")) {
                 auto res = calculum.call(right);
-                constants.erase(left->info().value());
-                env.erase(left->info().value());
+                constants.erase(left->token().value());
+                env.erase(left->token().value());
                 if (oper == "=") {
-                    constants[left->info().value()] = res;
+                    constants[left->token().value()] = res;
                 } else {
-                    env[left->info().value()] = right->clone();
+                    env[left->token().value()] = right->clone();
                 }
                 return res;
             } else {
