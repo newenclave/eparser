@@ -24,7 +24,7 @@ BraceWrapping:
     AfterControlStatement: false
     AfterEnum: false
     AfterFunction: true
-    BeforeCatch: true
+    BeforeCatch: false
     BeforeElse: false
     SplitEmptyFunction: true
     SplitEmptyRecord: true

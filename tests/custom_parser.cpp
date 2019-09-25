@@ -118,8 +118,7 @@ namespace eparser { namespace tests { namespace custom_parser {
             try {
                 auto res = parser.run(value.c_str());
                 std::cout << "\t" << op->call(res.get()) << "\n";
-            }
-            catch (const std::exception& ex) {
+            } catch (const std::exception& ex) {
                 std::cerr << "\tFaild to evaluate string '" << value.c_str()
                           << "'. "
                           << "Error: " << ex.what() << "\n";

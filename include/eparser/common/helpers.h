@@ -26,6 +26,12 @@ namespace eparser { namespace common { namespace helpers {
 
     struct reader {
 
+        template <typename CharT>
+        static bool is_gap(CharT c)
+        {
+            return c == '_';
+        }
+
         static bool is_digit(char c)
         {
             return ('0' <= c && c <= '9');
@@ -33,7 +39,7 @@ namespace eparser { namespace common { namespace helpers {
 
         static bool is_digit_(char c)
         {
-            return is_digit(c) || c == '_';
+            return is_digit(c) || is_gap(c);
         }
 
         template <typename Itr>
@@ -62,12 +68,6 @@ namespace eparser { namespace common { namespace helpers {
                 return true;
             }
             return false;
-        }
-
-        template <typename CharT>
-        static bool is_gap(CharT c)
-        {
-            return c == '_';
         }
 
         template <typename Itr>

@@ -1,10 +1,11 @@
+#include <cmath>
+#include <iostream>
+#include <numeric>
+
 #include "ast_to_string.h"
 #include "eparser/expressions/ast.h"
 #include "eparser/expressions/objects/operations.h"
 #include "eparser/expressions/parser.h"
-#include <cmath>
-#include <iostream>
-#include <numeric>
 
 using namespace eparser;
 using namespace eparser::common;
@@ -37,7 +38,7 @@ namespace eparser { namespace tests { namespace calc {
             auto itrc = constants.find(value->info().value());
             if (itr != env.end()) {
                 return calculum.call(itr->second.get());
-            } else if (itrc != constants.end() ) {
+            } else if (itrc != constants.end()) {
                 return itrc->second;
             }
             throw std::runtime_error("No value for '" + value->info().value()
@@ -59,11 +60,12 @@ namespace eparser { namespace tests { namespace calc {
             auto left = value->left().get();
             auto right = value->right().get();
             auto oper = value->info().key();
-            if(left->info().key() == "ident" && (oper == "=" || oper == ":=")) {
+            if (left->info().key() == "ident"
+                && (oper == "=" || oper == ":=")) {
                 auto res = calculum.call(right);
                 constants.erase(left->info().value());
                 env.erase(left->info().value());
-                if(oper == "=") {
+                if (oper == "=") {
                     constants[left->info().value()] = res;
                 } else {
                     env[left->info().value()] = right->clone();
@@ -98,12 +100,12 @@ namespace eparser { namespace tests { namespace calc {
         parser.set_float_key("num");
         parser.set_paren_pair("(", "(", ")", ")");
 
-        parser.add_binary_operation("+", "+",   1);
-        parser.add_binary_operation("-", "-",   1);
-        parser.add_binary_operation("*", "*",   2);
-        parser.add_binary_operation("/", "/",   2);
-        parser.add_binary_operation("%", "%",   2);
-        parser.add_binary_operation("=", "=",   0);
+        parser.add_binary_operation("+", "+", 1);
+        parser.add_binary_operation("-", "-", 1);
+        parser.add_binary_operation("*", "*", 2);
+        parser.add_binary_operation("/", "/", 2);
+        parser.add_binary_operation("%", "%", 2);
+        parser.add_binary_operation("=", "=", 0);
         parser.add_binary_operation(":=", ":=", 0);
 
         parser.add_prefix_operation("-", "-", 2);
