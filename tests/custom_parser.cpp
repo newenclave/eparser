@@ -50,7 +50,6 @@ namespace eparser { namespace tests { namespace custom_parser {
         std::vector<base::uptr> values_;
     };
 
-
     void run()
     {
         parser_type parser;

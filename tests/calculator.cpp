@@ -58,7 +58,7 @@ namespace eparser { namespace tests { namespace calc {
         calculum.set<binop_type>([&](auto value) {
             auto left = value->left().get();
             auto right = value->right().get();
-            auto oper = value->info().value();
+            auto oper = value->info().key();
             if(left->info().key() == "ident" && (oper == "=" || oper == ":=")) {
                 auto res = calculum.call(right);
                 constants.erase(left->info().value());
@@ -121,8 +121,7 @@ namespace eparser { namespace tests { namespace calc {
                 auto val = parser.run(value.c_str());
                 std::cout << "\t" << op->call(val.get()) << " = ";
                 std::cout << calculum.call(val.get()) << "\n";
-            }
-            catch (const std::exception& ex) {
+            } catch (const std::exception& ex) {
                 std::cerr << "\tFaild to evaluate string '" << value.c_str()
                           << "'. "
                           << "Error: " << ex.what() << "\n";
