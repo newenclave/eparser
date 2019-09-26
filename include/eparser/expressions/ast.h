@@ -170,7 +170,7 @@ namespace eparser { namespace expressions { namespace ast {
 
         unary_operation(objects::base::info::holder tinfo, token_info inf,
                         std::string type_name, typename super_type::uptr val)
-            : super_type(tinfo, std::move(inf), std::string("ast::") + __func__)
+            : super_type(tinfo, std::move(inf), std::move(type_name))
             , value_(std::move(val))
         {
         }
