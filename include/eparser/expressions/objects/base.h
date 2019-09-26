@@ -45,7 +45,7 @@ namespace eparser { namespace expressions { namespace objects {
             {
             }
 
-            base::uptr create() const
+            base::uptr create_instance() const
             {
                 return factory_();
             }

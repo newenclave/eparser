@@ -17,6 +17,7 @@ namespace eparser { namespace common {
         using token_type = common::token_info<CharT, KeyT>;
         lexer_error(const std::string& message, const token_type& tok)
             : exception(message)
+            , token_(tok)
         {
         }
         const token_type& token() const
@@ -34,6 +35,7 @@ namespace eparser { namespace common {
         using token_type = common::token_info<CharT, KeyT>;
         parser_error(const std::string& message, const token_type& tok)
             : exception(message)
+            , token_(tok)
         {
         }
         const token_type& token() const
