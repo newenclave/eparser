@@ -1,8 +1,9 @@
-#include "ast_to_string.h"
-#include "eparser/expressions/ast.h"
-#include "eparser/expressions/parser.h"
+
 #include <iostream>
 #include <sstream>
+
+#include "ast_to_string.h"
+#include "eparser/all.h"
 
 namespace eparser { namespace tests { namespace custom_parser {
 

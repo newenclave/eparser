@@ -38,7 +38,7 @@ namespace eparser { namespace expressions {
                 ss << "No NUD function defined for the value.";
                 throw error_type(ss.str(), ptr->current());
             });
-            parser_.set_default_led([](auto ptr, auto state) -> node_uptr {
+            parser_.set_default_led([](auto ptr, auto) -> node_uptr {
                 std::stringstream ss;
                 ss << "No LED function defined for the value.";
                 throw error_type(ss.str(), ptr->current());

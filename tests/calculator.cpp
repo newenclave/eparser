@@ -3,9 +3,7 @@
 #include <numeric>
 
 #include "ast_to_string.h"
-#include "eparser/expressions/ast.h"
-#include "eparser/expressions/objects/operations.h"
-#include "eparser/expressions/parser.h"
+#include "eparser/all.h"
 
 using namespace eparser;
 using namespace eparser::common;
