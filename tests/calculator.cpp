@@ -28,14 +28,14 @@ namespace eparser { namespace tests { namespace calc {
         std::map<std::string, double> constants;
 
         auto op = tests::ast_to_string<char, std::string>("(", ")");
-        transfrom calculum;
+        transfrom calc;
         binary bin;
 
-        calculum.set<ident_type>([&](auto value) {
+        calc.set<ident_type>([&](auto value) {
             auto itr = env.find(value->token().value());
             auto itrc = constants.find(value->token().value());
             if (itr != env.end()) {
-                return calculum.apply(itr->second.get());
+                return calc.apply(itr->second.get());
             } else if (itrc != constants.end()) {
                 return itrc->second;
             }
@@ -43,24 +43,24 @@ namespace eparser { namespace tests { namespace calc {
                                      + "'");
         });
 
-        calculum.set<value_type>([&](auto value) {
+        calc.set<value_type>([&](auto value) {
             return std::atof(value->token().value().c_str());
         });
 
-        calculum.set<prefix_type>([&](auto value) {
+        calc.set<prefix_type>([&](auto value) {
             if (value->token().value() == "-") {
-                return -1 * calculum.apply(value->value().get());
+                return -1 * calc.apply(value->value().get());
             }
-            return calculum.apply(value->value().get());
+            return calc.apply(value->value().get());
         });
 
-        calculum.set<binop_type>([&](auto value) {
+        calc.set<binop_type>([&](auto value) {
             auto left = value->left().get();
             auto right = value->right().get();
             auto oper = value->token().key();
             if (left->token().key() == "ident"
                 && (oper == "=" || oper == ":=")) {
-                auto res = calculum.apply(right);
+                auto res = calc.apply(right);
                 constants.erase(left->token().value());
                 env.erase(left->token().value());
                 if (oper == "=") {
@@ -70,8 +70,8 @@ namespace eparser { namespace tests { namespace calc {
                 }
                 return res;
             } else {
-                auto left_expr = calculum.apply(left);
-                auto right_expr = calculum.apply(right);
+                auto left_expr = calc.apply(left);
+                auto right_expr = calc.apply(right);
                 switch (oper[0]) {
                 case '-':
                     return left_expr - right_expr;
@@ -120,7 +120,7 @@ namespace eparser { namespace tests { namespace calc {
             try {
                 auto val = parser.run(value.c_str());
                 std::cout << "\t" << op->apply(val.get()) << " = ";
-                std::cout << calculum.apply(val.get()) << "\n";
+                std::cout << calc.apply(val.get()) << "\n";
             } catch (const std::exception& ex) {
                 std::cerr << "\tFaild to evaluate string '" << value.c_str()
                           << "'. "
