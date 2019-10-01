@@ -105,7 +105,7 @@ namespace eparser { namespace tests { namespace custom_parser {
                     ss << ", ";
                 }
                 empty = false;
-                ss << op->call(v.get());
+                ss << op->apply(v.get());
             }
             ss << "]";
             return ss.str();
@@ -118,7 +118,7 @@ namespace eparser { namespace tests { namespace custom_parser {
             std::cin.getline(&value[0], value.size());
             try {
                 auto res = parser.run(value.c_str());
-                std::cout << "\t" << op->call(res.get()) << "\n";
+                std::cout << "\t" << op->apply(res.get()) << "\n";
             } catch (const std::exception& ex) {
                 std::cerr << "\tFaild to evaluate string '" << value.c_str()
                           << "'. "

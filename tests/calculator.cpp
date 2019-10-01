@@ -35,7 +35,7 @@ namespace eparser { namespace tests { namespace calc {
             auto itr = env.find(value->token().value());
             auto itrc = constants.find(value->token().value());
             if (itr != env.end()) {
-                return calculum.call(itr->second.get());
+                return calculum.apply(itr->second.get());
             } else if (itrc != constants.end()) {
                 return itrc->second;
             }
@@ -49,9 +49,9 @@ namespace eparser { namespace tests { namespace calc {
 
         calculum.set<prefix_type>([&](auto value) {
             if (value->token().value() == "-") {
-                return -1 * calculum.call(value->value().get());
+                return -1 * calculum.apply(value->value().get());
             }
-            return calculum.call(value->value().get());
+            return calculum.apply(value->value().get());
         });
 
         calculum.set<binop_type>([&](auto value) {
@@ -60,7 +60,7 @@ namespace eparser { namespace tests { namespace calc {
             auto oper = value->token().key();
             if (left->token().key() == "ident"
                 && (oper == "=" || oper == ":=")) {
-                auto res = calculum.call(right);
+                auto res = calculum.apply(right);
                 constants.erase(left->token().value());
                 env.erase(left->token().value());
                 if (oper == "=") {
@@ -70,8 +70,8 @@ namespace eparser { namespace tests { namespace calc {
                 }
                 return res;
             } else {
-                auto left_expr = calculum.call(left);
-                auto right_expr = calculum.call(right);
+                auto left_expr = calculum.apply(left);
+                auto right_expr = calculum.apply(right);
                 switch (oper[0]) {
                 case '-':
                     return left_expr - right_expr;
@@ -119,8 +119,8 @@ namespace eparser { namespace tests { namespace calc {
             }
             try {
                 auto val = parser.run(value.c_str());
-                std::cout << "\t" << op->call(val.get()) << " = ";
-                std::cout << calculum.call(val.get()) << "\n";
+                std::cout << "\t" << op->apply(val.get()) << " = ";
+                std::cout << calculum.apply(val.get()) << "\n";
             } catch (const std::exception& ex) {
                 std::cerr << "\tFaild to evaluate string '" << value.c_str()
                           << "'. "

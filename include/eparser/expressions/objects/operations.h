@@ -53,7 +53,7 @@ namespace eparser { namespace expressions { namespace objects {
                          create_call<LeftT, RightT, CallT>(std::move(call)));
             }
 
-            result_type call(key_type op, base::ptr left, base::ptr right)
+            result_type apply(key_type op, base::ptr left, base::ptr right)
             {
                 if (auto fn = get(op, left, right)) {
                     return fn(left, right);
@@ -65,7 +65,7 @@ namespace eparser { namespace expressions { namespace objects {
             std::unique_ptr<TargetObj> call_cast(key_type op, base::ptr left,
                                                  base::ptr right)
             {
-                return base::cast<TargetObj>(call(op, left, right));
+                return base::cast<TargetObj>(apply(op, left, right));
             }
 
             function_type get(key_type op, base::ptr left, base::ptr right)
@@ -135,7 +135,7 @@ namespace eparser { namespace expressions { namespace objects {
                          create_call<ValueT, CallT>(std::move(fn)));
             }
 
-            result_type call(key_type op, base::ptr value)
+            result_type apply(key_type op, base::ptr value)
             {
                 if (auto fn = get(op, value)) {
                     return fn(value);
@@ -146,7 +146,7 @@ namespace eparser { namespace expressions { namespace objects {
             template <typename TargetObj>
             std::unique_ptr<TargetObj> call_cast(key_type op, base::ptr val)
             {
-                return base::cast<TargetObj>(call(op, val));
+                return base::cast<TargetObj>(apply(op, val));
             }
 
             function_type get(key_type op, base::ptr value)
@@ -212,7 +212,7 @@ namespace eparser { namespace expressions { namespace objects {
             }
 
             template <typename ToT>
-            std::unique_ptr<ToT> call(base::ptr value)
+            std::unique_ptr<ToT> apply(base::ptr value)
             {
                 auto id = std::make_tuple(value->type_info(),
                                           base::info::create<ToT>());
@@ -295,7 +295,7 @@ namespace eparser { namespace expressions { namespace objects {
                 calls_[id] = create_unary_call<FromT>(std::move(fn));
             }
 
-            result_type call(base::ptr value)
+            result_type apply(base::ptr value)
             {
                 if (auto fn = get(value)) {
                     return fn(value);

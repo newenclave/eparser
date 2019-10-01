@@ -29,18 +29,18 @@ namespace eparser { namespace tests {
 
         op->template set<prefix_type>([optr, lparen, rparen](auto value) {
             return lparen + value->token().value() + " "
-                + optr->call(value->value().get()) + rparen;
+                + optr->apply(value->value().get()) + rparen;
         });
 
         op->template set<postfix_type>([optr, lparen, rparen](auto value) {
-            return lparen + optr->call(value->value().get()) + " "
+            return lparen + optr->apply(value->value().get()) + " "
                 + value->token().value() + rparen;
         });
 
         op->template set<binop_type>([optr, lparen, rparen](auto value) {
-            return lparen + optr->call(value->left().get()) + " "
+            return lparen + optr->apply(value->left().get()) + " "
                 + value->token().value() + " "
-                + optr->call(value->right().get()) + rparen;
+                + optr->apply(value->right().get()) + rparen;
         });
         return op;
     }
