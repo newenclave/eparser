@@ -103,8 +103,8 @@ namespace eparser { namespace tests { namespace calc {
         parser.add_binary_operation("*", "*", 2);
         parser.add_binary_operation("/", "/", 2);
         parser.add_binary_operation("%", "%", 2);
-        parser.add_binary_operation("=", "=", 0);
-        parser.add_binary_operation(":=", ":=", 0);
+        parser.add_binary_operation("=", "=", 3);
+        parser.add_binary_operation(":=", ":=", 3);
 
         parser.add_prefix_operation("-", "-", 2);
         parser.add_prefix_operation("+", "+", 2);
