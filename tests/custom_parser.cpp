@@ -112,6 +112,7 @@ namespace eparser { namespace tests { namespace custom_parser {
         });
 
         std::cout << "In expressions you can use idents, numbers and []\n";
+
         while (true) {
             std::string value(1024, '\0');
             std::cout << "Input an expression: ";

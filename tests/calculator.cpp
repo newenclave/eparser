@@ -20,7 +20,6 @@ namespace eparser { namespace tests { namespace calc {
 
     using operations = objects::oprerations::all<std::string, double>;
     using transfrom = typename operations::transfrom_type;
-    using binary = typename operations::binary_type;
 
     void run()
     {
@@ -29,7 +28,6 @@ namespace eparser { namespace tests { namespace calc {
 
         auto op = tests::ast_to_string<char, std::string>("(", ")");
         transfrom calc;
-        binary bin;
 
         calc.set<ident_type>([&](auto value) {
             auto itr = env.find(value->token().value());
