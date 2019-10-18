@@ -32,7 +32,7 @@ namespace eparser { namespace tests { namespace plot {
 	void point(canvas_type &canvas, std::size_t x, std::size_t y) 
 	{
 		if(y < canvas.size() && x < canvas[y].size()) {
-			canvas[y][x] = '#';
+			canvas[canvas.size() - y - 1][x] = '#';
 		}
 	}
 
@@ -73,6 +73,12 @@ namespace eparser { namespace tests { namespace plot {
 		calc.set<prefix_type>([&](auto value) {
 			if (value->token().value() == "-") {
 				return -1 * calc.apply(value->value().get());
+			} else if(value->token().value() == "abs") {
+				return std::abs(calc.apply(value->value().get()));
+			} else if(value->token().value() == "sin") {
+				return std::sin(calc.apply(value->value().get()));
+			} else if(value->token().value() == "cos") {
+				return std::cos(calc.apply(value->value().get()));
 			}
 			return calc.apply(value->value().get());
 		});
@@ -131,6 +137,9 @@ namespace eparser { namespace tests { namespace plot {
 
 		parser.add_prefix_operation("-", "-", 2);
 		parser.add_prefix_operation("+", "+", 2);
+		parser.add_prefix_operation("abs", "abs", 2);
+		parser.add_prefix_operation("sin", "sin", 2);
+		parser.add_prefix_operation("cos", "cos", 2);
 
 		std::cout << "Write an expression like 'x + 2'\n";
 		constexpr std::size_t X = 120;
