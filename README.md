@@ -43,3 +43,7 @@ Enter: 2 + 2 * 2
 Enter: (2 + 2) * 2
         ((2 + 2) * 2) = 8
 ```
+
+## a plot example
+Same as the calculator, but you enter an expresstion with 'X' and the example draws all 'Y' values as a line.
+![plot](https://github.com/newenclave/eparser/blob/master/tests/plot.png)
