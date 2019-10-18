@@ -5,12 +5,12 @@ namespace eparser { namespace tests {
     namespace calc {
         void run();
     }
-	namespace custom_parser {
-		void run();
-	}
-	namespace plot {
-		void run();
-	}
+    namespace custom_parser {
+        void run();
+    }
+    namespace plot {
+        void run();
+    }
 }}
 
 int main(int argc, char* argv[])
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
     } else if (name == "custom") {
         eparser::tests::custom_parser::run();
     } else if (name == "plot") {
-		eparser::tests::plot::run();
-	}
+        eparser::tests::plot::run();
+    }
 
     return 0;
 }
