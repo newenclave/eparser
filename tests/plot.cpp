@@ -19,15 +19,18 @@ namespace eparser { namespace tests { namespace plot {
     using postfix_type = typename parser_type::ast_postfix_operation;
 
     using operations = objects::oprerations::all<std::string, double>;
+
+    using transfrom = typename operations::transfrom_type;
+    using bibary_type = typename operations::binary_type;
     using transfrom = typename operations::transfrom_type;
 
     using line_type = std::vector<std::uint8_t>;
     using canvas_type = std::vector<line_type>;
 
-    void point(canvas_type& canvas, int x, int y)
+    void point(canvas_type& canvas, std::size_t x, std::size_t y)
     {
         if (x >= 0 && y >= 0 && y < canvas.size() && x < canvas[y].size()) {
-            canvas[canvas.size() - y - 1][x] = '#';
+            canvas[canvas.size() - y - 1][x] = '*';
         }
     }
 
@@ -64,6 +67,7 @@ namespace eparser { namespace tests { namespace plot {
         std::map<std::string, double> constants;
 
         auto op = tests::ast_to_string<char, std::string>("(", ")");
+        bibary_type bin_calc;
         transfrom calc;
 
         calc.set<ident_type>([&](auto value) {

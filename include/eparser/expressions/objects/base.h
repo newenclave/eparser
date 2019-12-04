@@ -92,6 +92,11 @@ namespace eparser { namespace expressions { namespace objects {
             std::function<base::uptr()> factory_;
         };
 
+        static info::holder base_info()
+        {
+            return info::create<base>();
+        }
+
         base(info::holder inf)
             : info_(std::move(inf))
         {

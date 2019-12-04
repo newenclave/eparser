@@ -70,13 +70,7 @@ namespace eparser { namespace expressions { namespace objects {
 
             function_type get(key_type op, base::ptr left, base::ptr right)
             {
-                auto id = std::make_tuple(op, left->type_info(),
-                                          right->type_info());
-                auto find = bin_map_.find(id);
-                if (find != bin_map_.end()) {
-                    return find->second;
-                }
-                return {};
+                return get_impl(op, left->type_info(), right->type_info());
             }
 
             std::function<result_type()> wrap(key_type op, base::ptr left,
@@ -91,16 +85,41 @@ namespace eparser { namespace expressions { namespace objects {
             template <typename LeftT, typename RightT>
             function_type get(key_type op)
             {
-                auto id = std::make_tuple(op, base::info::create<LeftT>(),
-                                          base::info::create<RightT>());
+                return get_impl(op, base::info::create<LeftT>(),
+                                base::info::create<RightT>());
+            }
+
+        private:
+            function_type get_impl(key_type op, base::info::holder left,
+                                   base::info::holder right)
+            {
+                auto id = std::make_tuple(op, left, right);
                 auto find = bin_map_.find(id);
                 if (find != bin_map_.end()) {
                     return find->second;
                 }
+
+                id = std::make_tuple(op, left, base::base_info());
+                find = bin_map_.find(id);
+                if (find != bin_map_.end()) {
+                    return find->second;
+                }
+
+                id = std::make_tuple(op, base::base_info(), right);
+                find = bin_map_.find(id);
+                if (find != bin_map_.end()) {
+                    return find->second;
+                }
+
+                id = std::make_tuple(op, left, right);
+                find = bin_map_.find(id);
+                if (find != bin_map_.end()) {
+                    return find->second;
+                }
+
                 return {};
             }
 
-        private:
             void set_impl(key_type op, base::info::holder left_type,
                           base::info::holder right_type, function_type call)
             {
@@ -151,12 +170,7 @@ namespace eparser { namespace expressions { namespace objects {
 
             function_type get(key_type op, base::ptr value)
             {
-                auto id = std::make_tuple(op, value->type_info());
-                auto find = un_map_.find(id);
-                if (find != un_map_.end()) {
-                    return find->second;
-                }
-                return {};
+                return get_impl(std::move(op), value->type_info());
             }
 
             std::function<result_type()> wrap(key_type op, base::ptr value)
@@ -170,15 +184,27 @@ namespace eparser { namespace expressions { namespace objects {
             template <typename ValueT>
             function_type get(key_type op)
             {
-                auto id = std::make_tuple(op, base::info::create<ValueT>());
+                return get_impl(op, base::info::create<ValueT>());
+            }
+
+        private:
+            function_type get_impl(key_type op, base::info::holder holder_id)
+            {
+                auto id = std::make_tuple(op, holder_id);
                 auto find = un_map_.find(id);
                 if (find != un_map_.end()) {
                     return find->second;
                 }
+
+                id = std::make_tuple(op, base::base_info());
+                find = un_map_.find(id);
+                if (find != un_map_.end()) {
+                    return find->second;
+                }
+
                 return {};
             }
 
-        private:
             void set_impl(key_type op, base::info::holder value_type,
                           function_type call)
             {
@@ -310,6 +336,12 @@ namespace eparser { namespace expressions { namespace objects {
                 if (itr != calls_.end()) {
                     return itr->second;
                 }
+
+                itr = calls_.find(base::base_info());
+                if (itr != calls_.end()) {
+                    return itr->second;
+                }
+
                 return {};
             }
 
@@ -328,6 +360,12 @@ namespace eparser { namespace expressions { namespace objects {
                 if (itr != calls_.end()) {
                     return itr->second;
                 }
+
+                itr = calls_.find(base::base_info());
+                if (itr != calls_.end()) {
+                    return itr->second;
+                }
+
                 return {};
             }
 

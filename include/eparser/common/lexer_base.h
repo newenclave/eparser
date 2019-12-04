@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "eparser/common/exceptions.h"
+#include "eparser/common/scanner.h"
 #include "eparser/common/token_info.h"
 #include "eparser/common/trie.h"
 
