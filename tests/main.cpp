@@ -16,6 +16,7 @@ namespace eparser { namespace tests {
     }
 }}
 
+using namespace eparser::expressions::objects;
 
 struct A : public eparser::expressions::objects::base {
     A()
@@ -31,7 +32,6 @@ struct A : public eparser::expressions::objects::base {
         return std::make_unique<A>();
     }
 };
-
 struct B : public eparser::expressions::objects::base {
     B()
         : base(base::info::create<B>())
@@ -46,14 +46,48 @@ struct B : public eparser::expressions::objects::base {
         return std::make_unique<B>();
     }
 };
+struct C : public eparser::expressions::objects::base {
+    C()
+        : base(base::info::create<C>())
+    {
+    }
+    const char* type_name() const override
+    {
+        return "C";
+    }
+    uptr clone() const override
+    {
+        return std::make_unique<C>();
+    }
+};
 
 int main(int argc, char* argv[])
 {
-    eparser::expressions::objects::oprerations::all<std::string> oper;
+    oprerations::all<std::string> oper;
+    oper.get_binary().set<A, base>("+", [](auto a, auto b) {
+        std::cout << "A base\n";
+        return nullptr;
+    });
     oper.get_binary().set<A, B>("+", [](auto a, auto b) {
         std::cout << "A B\n";
         return nullptr;
     });
+    oper.get_binary().set<B, A>("+", [](auto a, auto b) {
+        std::cout << "B A\n";
+        return nullptr;
+    });
+    oper.get_binary().set<base, B>("+", [](auto a, auto b) {
+        std::cout << "base B\n";
+        return nullptr;
+    });
+
+    A a;
+    B b;
+    C c;
+
+    oper.get_binary().get<A, B>("+")(&a, &b);
+
+    return 0;
 
     std::string name;
     if (argc < 2) {
