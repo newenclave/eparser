@@ -21,6 +21,7 @@ namespace eparser { namespace tests { namespace calc2 {
     using operations = objects::oprerations::all<std::string, double>;
     using evaluator = typename operations::transfrom_type;
     using bin_evaluator = typename operations::binary_type;
+    using un_evaluator = typename operations::unary_type;
 
     void run()
     {
@@ -30,6 +31,7 @@ namespace eparser { namespace tests { namespace calc2 {
         auto op = tests::ast_to_string<char, std::string>("(", ")");
         evaluator ev;
         bin_evaluator bev;
+        un_evaluator uev;
 
         ev.set<ident_type>([&](auto value) {
             auto itr = env.find(value->token().value());
@@ -47,15 +49,22 @@ namespace eparser { namespace tests { namespace calc2 {
             return std::atof(value->token().value().c_str());
         });
 
+        uev.set<objects::base>("-", [&](auto value){
+            return -1 * ev.apply(value);
+        });
+
+        uev.set<objects::base>("+", [&](auto value){
+            return ev.apply(value);
+        });
+
         ev.set<prefix_type>([&](auto value) {
             auto oper = value->token().value();
-            if (oper == "-") {
-                return - ev.apply(value->value().get());
+            if(auto call = uev.get(oper, value->value().get())) {
+                return call(value->value().get());
             }
-            return ev.apply(value->value().get());
-//            throw std::runtime_error("prefix operator '"
-//                + oper + "' not found for '"
-//                + value->value()->type_name() + "'");
+            throw std::runtime_error("prefix operator '"
+                + oper + "' not found for '"
+                + value->value()->type_name() + "'");
         });
 
         bev.set<objects::base, objects::base>("+", [&](auto lft, auto rght){
