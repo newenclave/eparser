@@ -68,7 +68,9 @@ namespace eparser { namespace tests { namespace calc2 {
             return ev.apply(lft) * ev.apply(rght);
         });
         bev.set<objects::base, objects::base>("/", [&](auto lft, auto rght){
-            return ev.apply(lft) / ev.apply(rght);
+            auto delimeter = ev.apply(rght);
+            return delimeter ? ev.apply(lft) / delimeter
+                             : std::numeric_limits<double>::infinity();
         });
         bev.set<objects::base, objects::base>("%", [&](auto lft, auto rght){
             auto delimeter = ev.apply(rght);
