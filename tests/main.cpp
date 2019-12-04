@@ -5,7 +5,7 @@
 #include "eparser/expressions/objects/operations.h"
 
 namespace eparser { namespace tests {
-    namespace calc {
+    namespace calc2 {
         void run();
     }
     namespace custom_parser {
@@ -63,32 +63,6 @@ struct C : public eparser::expressions::objects::base {
 
 int main(int argc, char* argv[])
 {
-    oprerations::all<std::string> oper;
-    oper.get_binary().set<A, base>("+", [](auto a, auto b) {
-        std::cout << "A base\n";
-        return nullptr;
-    });
-    oper.get_binary().set<A, B>("+", [](auto a, auto b) {
-        std::cout << "A B\n";
-        return nullptr;
-    });
-    oper.get_binary().set<B, A>("+", [](auto a, auto b) {
-        std::cout << "B A\n";
-        return nullptr;
-    });
-    oper.get_binary().set<base, B>("+", [](auto a, auto b) {
-        std::cout << "base B\n";
-        return nullptr;
-    });
-
-    A a;
-    B b;
-    C c;
-
-    oper.get_binary().get<A, B>("+")(&a, &b);
-
-    return 0;
-
     std::string name;
     if (argc < 2) {
         std::cout << "usage: test <name>;\n\tdefault is calc\n";
@@ -98,7 +72,7 @@ int main(int argc, char* argv[])
     }
 
     if (name == "calc") {
-        eparser::tests::calc::run();
+        eparser::tests::calc2::run();
     } else if (name == "custom") {
         eparser::tests::custom_parser::run();
     } else if (name == "plot") {

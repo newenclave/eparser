@@ -111,7 +111,7 @@ namespace eparser { namespace expressions { namespace objects {
                     return find->second;
                 }
 
-                id = std::make_tuple(op, left, right);
+                id = std::make_tuple(op, base::base_info(), base::base_info());
                 find = bin_map_.find(id);
                 if (find != bin_map_.end()) {
                     return find->second;

@@ -23,4 +23,3 @@ foreach(src_dir ${src})
 endforeach()
 
 add_executable( ${PROJECT_NAME} ${lib_src} )
-
