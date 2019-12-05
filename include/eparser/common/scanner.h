@@ -1,4 +1,4 @@
-
+#include <cstdint>
 
 namespace eparser { namespace common {
     template <typename ItrT>
