@@ -3,6 +3,8 @@
 
 #include "eparser/common/scanner.h"
 #include "eparser/expressions/objects/operations.h"
+#include "eparser/common/scanner.h"
+#include "eparser/common/helpers.h"
 
 namespace eparser { namespace tests {
     namespace calc2 {
@@ -18,51 +20,132 @@ namespace eparser { namespace tests {
 
 using namespace eparser::expressions::objects;
 
-struct A : public eparser::expressions::objects::base {
-    A()
-        : base(base::info::create<A>())
+struct number_value {
+    number_value(std::int64_t v)
     {
+        type = INTEGER;
+        value.integer = v;
     }
-    const char* type_name() const override
+    number_value(double v)
     {
-        return "A";
+        type = FLOATING;
+        value.floating = v;
     }
-    uptr clone() const override
-    {
-        return std::make_unique<A>();
-    }
+    union {
+        double floating;
+        std::int64_t integer;
+    } value = {};
+    enum {
+        NONE,
+        FLOATING,
+        INTEGER
+    } type = NONE;
 };
-struct B : public eparser::expressions::objects::base {
-    B()
-        : base(base::info::create<B>())
-    {
+
+using namespace eparser::common;
+
+template <typename ItrT1>
+number_value scan_number(scanner<ItrT1> &scan) {
+
+    auto eol = [&scan](){ return scan.eol(); };
+    auto is_digit = [&eol, &scan]() {
+        return !eol() && helpers::reader::is_digit_(*scan);
+    };
+
+    std::int64_t d = 0;
+    std::int64_t e = 0;
+    double a = 0.0;
+
+    while(is_digit()) {
+        if(helpers::reader::is_gap(*scan)) {
+            ++scan;
+            continue;
+        }
+        auto value = helpers::reader::char2int(*scan);
+
+        d *= 10;
+        d += value;
+
+        a *= 10.0;
+        a += value;
+        ++scan;
     }
-    const char* type_name() const override
-    {
-        return "B";
+    bool found = false;
+    auto scan_backup = scan;
+
+    if(!eol() && *scan == '.') {
+        ++scan;
+        while(is_digit()) {
+            if(helpers::reader::is_gap(*scan)) {
+                ++scan;
+                continue;
+            }
+            found = true;
+            a *= 10.0;
+            a += helpers::reader::char2int(*scan);
+            e -= 1;
+            ++scan;
+        }
     }
-    uptr clone() const override
-    {
-        return std::make_unique<B>();
+
+    if(!eol() && (*scan == 'e' || *scan == 'E')) {
+        int sign = 1;
+        int i = 0;
+        ++scan;
+        if(!eol()) {
+            switch(*scan) {
+            case '-':
+                ++scan;
+                sign = -1;
+                break;
+            case '+':
+                ++scan;
+                break;
+            }
+        }
+        while(is_digit()) {
+            if(helpers::reader::is_gap(*scan)) {
+                ++scan;
+                continue;
+            }
+            found = true;
+            i *= 10;
+            i += helpers::reader::char2int(*scan);
+            ++scan;
+        }
+        e += (i * sign);
     }
-};
-struct C : public eparser::expressions::objects::base {
-    C()
-        : base(base::info::create<C>())
-    {
+
+    while(e > 0) {
+        a *= 10.0;
+        e -= 1;
     }
-    const char* type_name() const override
-    {
-        return "C";
+
+    while(e < 0) {
+        a *= 0.1;
+        e += 1;
     }
-    uptr clone() const override
-    {
-        return std::make_unique<C>();
+
+    if(!found) {
+        scan = scan_backup;
+        return number_value {d};
+    } else {
+        return number_value {a};
     }
-};
+}
 
 int main(int argc, char* argv[])
 {
+    std::string test = "0.3e+3-!@#$";
+    auto scan = make_scanner(test.begin(), test.end());
+    auto val = scan_number(scan);
+
+    std::cout << val.type << " i" << val.value.integer
+              << " f" << val.value.floating << "\n";
+    std::cout << &(*scan.begin()) << "\n";
+
+    return 0;
+
     std::string name;
     if (argc < 2) {
         std::cout << "usage: test <name>;\n\tdefault is calc\n";

@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 
 namespace eparser { namespace common {
@@ -9,8 +10,6 @@ namespace eparser { namespace common {
         scanner(ItrT b, ItrT e)
             : current_(b)
             , end_(e)
-            , line_(1)
-            , pos_(1)
         {
         }
 
@@ -76,23 +75,45 @@ namespace eparser { namespace common {
 
     private:
         iterator_type current_ = {};
-        const iterator_type end_ = {};
+        iterator_type end_ = {};
 
-        std::size_t line_ = 0;
-        std::size_t pos_ = 0;
+        std::size_t line_ = 1;
+        std::size_t pos_ = 1;
     };
 
-    template <typename ItrT>
-    inline bool operator==(const scanner<ItrT>& begin, ItrT end)
+    template <typename IT1, typename IT2>
+    inline bool operator ==(const scanner<IT1> begin, IT2 end)
     {
         return begin.begin() == end;
     }
-
-    template <typename ItrT>
-    inline bool operator==(ItrT end, const scanner<ItrT>& begin)
+    template <typename IT1, typename IT2>
+    inline bool operator !=(const scanner<IT1> begin, IT2 end)
     {
-        return begin == end;
+        return begin.begin() != end;
     }
+
+    template <typename IT1, typename IT2>
+    inline bool operator ==(IT1 begin, const scanner<IT2>& end)
+    {
+        return begin == end.begin();
+    }
+    template <typename IT1, typename IT2>
+    inline bool operator !=(IT1 begin, const scanner<IT2>& end)
+    {
+        return begin != end.begin();
+    }
+
+    template <typename IT1, typename IT2>
+    inline bool operator ==(const scanner<IT2> &begin, const scanner<IT2>& end)
+    {
+        return begin.begin() == end.begin();
+    }
+    template <typename IT1, typename IT2>
+    inline bool operator !=(const scanner<IT2> &begin, const scanner<IT2>& end)
+    {
+        return begin.begin() != end.begin();
+    }
+
 
     template <typename ItrT>
     inline auto make_scanner(ItrT b, ItrT e)
