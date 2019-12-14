@@ -82,38 +82,37 @@ namespace eparser { namespace common {
     };
 
     template <typename IT1, typename IT2>
-    inline bool operator ==(const scanner<IT1> begin, IT2 end)
+    inline bool operator==(const scanner<IT1> begin, IT2 end)
     {
         return begin.begin() == end;
     }
     template <typename IT1, typename IT2>
-    inline bool operator !=(const scanner<IT1> begin, IT2 end)
+    inline bool operator!=(const scanner<IT1> begin, IT2 end)
     {
         return begin.begin() != end;
     }
 
     template <typename IT1, typename IT2>
-    inline bool operator ==(IT1 begin, const scanner<IT2>& end)
+    inline bool operator==(IT1 begin, const scanner<IT2>& end)
     {
         return begin == end.begin();
     }
     template <typename IT1, typename IT2>
-    inline bool operator !=(IT1 begin, const scanner<IT2>& end)
+    inline bool operator!=(IT1 begin, const scanner<IT2>& end)
     {
         return begin != end.begin();
     }
 
     template <typename IT1, typename IT2>
-    inline bool operator ==(const scanner<IT2> &begin, const scanner<IT2>& end)
+    inline bool operator==(const scanner<IT2>& begin, const scanner<IT2>& end)
     {
         return begin.begin() == end.begin();
     }
     template <typename IT1, typename IT2>
-    inline bool operator !=(const scanner<IT2> &begin, const scanner<IT2>& end)
+    inline bool operator!=(const scanner<IT2>& begin, const scanner<IT2>& end)
     {
         return begin.begin() != end.begin();
     }
-
 
     template <typename ItrT>
     inline auto make_scanner(ItrT b, ItrT e)

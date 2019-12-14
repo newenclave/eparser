@@ -49,49 +49,47 @@ namespace eparser { namespace tests { namespace calc2 {
             return std::atof(value->token().value().c_str());
         });
 
-        uev.set<objects::base>("-", [&](auto value){
-            return -1 * ev.apply(value);
-        });
+        uev.set<objects::base>(
+            "-", [&](auto value) { return -1 * ev.apply(value); });
 
-        uev.set<objects::base>("+", [&](auto value){
-            return ev.apply(value);
-        });
+        uev.set<objects::base>("+",
+                               [&](auto value) { return ev.apply(value); });
 
         ev.set<prefix_type>([&](auto value) {
             auto oper = value->token().value();
-            if(auto call = uev.get(oper, value->value().get())) {
+            if (auto call = uev.get(oper, value->value().get())) {
                 return call(value->value().get());
             }
-            throw std::runtime_error("prefix operator '"
-                + oper + "' not found for '"
-                + value->value()->type_name() + "'");
+            throw std::runtime_error("prefix operator '" + oper
+                                     + "' not found for '"
+                                     + value->value()->type_name() + "'");
         });
 
-        bev.set<objects::base, objects::base>("+", [&](auto lft, auto rght){
+        bev.set<objects::base, objects::base>("+", [&](auto lft, auto rght) {
             return ev.apply(lft) + ev.apply(rght);
         });
-        bev.set<objects::base, objects::base>("-", [&](auto lft, auto rght){
+        bev.set<objects::base, objects::base>("-", [&](auto lft, auto rght) {
             return ev.apply(lft) - ev.apply(rght);
         });
-        bev.set<objects::base, objects::base>("*", [&](auto lft, auto rght){
+        bev.set<objects::base, objects::base>("*", [&](auto lft, auto rght) {
             return ev.apply(lft) * ev.apply(rght);
         });
-        bev.set<objects::base, objects::base>("/", [&](auto lft, auto rght){
+        bev.set<objects::base, objects::base>("/", [&](auto lft, auto rght) {
             auto delimeter = ev.apply(rght);
             return delimeter ? ev.apply(lft) / delimeter
                              : std::numeric_limits<double>::infinity();
         });
-        bev.set<objects::base, objects::base>("%", [&](auto lft, auto rght){
+        bev.set<objects::base, objects::base>("%", [&](auto lft, auto rght) {
             auto delimeter = ev.apply(rght);
             return delimeter ? static_cast<std::int64_t>(ev.apply(lft))
-                          % static_cast<std::int64_t>(delimeter)
-                        : std::numeric_limits<double>::infinity();
+                    % static_cast<std::int64_t>(delimeter)
+                             : std::numeric_limits<double>::infinity();
         });
 
-        bev.set<ident_type, objects::base>("=", [&](auto id, auto value){
+        bev.set<ident_type, objects::base>("=", [&](auto id, auto value) {
             return constants[id->token().value()] = ev.apply(value);
         });
-        bev.set<ident_type, objects::base>(":=", [&](auto id, auto value){
+        bev.set<ident_type, objects::base>(":=", [&](auto id, auto value) {
             env[id->token().value()] = value->clone();
             return ev.apply(value);
         });
@@ -100,12 +98,12 @@ namespace eparser { namespace tests { namespace calc2 {
             auto left = value->left().get();
             auto right = value->right().get();
             auto oper = value->token().key();
-            if(auto call = bev.get(oper, left, right)) {
+            if (auto call = bev.get(oper, left, right)) {
                 return call(left, right);
             }
-            throw std::runtime_error("binary operator '"
-                + oper + "' not found for '"
-                + left->type_name() + "' and '" + right->type_name() + "'");
+            throw std::runtime_error("binary operator '" + oper
+                                     + "' not found for '" + left->type_name()
+                                     + "' and '" + right->type_name() + "'");
         });
 
         parser_type parser;

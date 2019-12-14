@@ -6,6 +6,7 @@
 
 #include "eparser/common/helpers.h"
 #include "eparser/common/lexer_base.h"
+#include "eparser/common/scanner.h"
 
 namespace eparser { namespace expressions {
 
@@ -18,6 +19,7 @@ namespace eparser { namespace expressions {
         using lexer_type = common::lexer_base<char_type, key_type, less_type>;
         using string_type = std::basic_string<char_type>;
         using iterator = typename string_type::const_iterator;
+        using scanner_type = common::scanner<iterator>;
         using token_info = common::token_info<char_type, key_type>;
         using factory_type = typename lexer_type::token_state_factory;
         using lexer_state = typename lexer_type::internal_state;
@@ -272,6 +274,7 @@ namespace eparser { namespace expressions {
         }
 
         string_type input_;
+        scanner_type scanner_;
         iterator current_;
         iterator end_;
         std::vector<std::size_t> newline_map_;

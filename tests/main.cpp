@@ -1,10 +1,9 @@
 #include <chrono>
 #include <iostream>
 
+#include "eparser/common/helpers.h"
 #include "eparser/common/scanner.h"
 #include "eparser/expressions/objects/operations.h"
-#include "eparser/common/scanner.h"
-#include "eparser/common/helpers.h"
 
 namespace eparser { namespace tests {
     namespace calc2 {
@@ -35,19 +34,16 @@ struct number_value {
         double floating;
         std::int64_t integer;
     } value = {};
-    enum {
-        NONE,
-        FLOATING,
-        INTEGER
-    } type = NONE;
+    enum { NONE, FLOATING, INTEGER } type = NONE;
 };
 
 using namespace eparser::common;
 
 template <typename ItrT1>
-number_value scan_number(scanner<ItrT1> &scan) {
+number_value scan_number(scanner<ItrT1>& scan)
+{
 
-    auto eol = [&scan](){ return scan.eol(); };
+    auto eol = [&scan]() { return scan.eol(); };
     auto is_digit = [&eol, &scan]() {
         return !eol() && helpers::reader::is_digit_(*scan);
     };
@@ -56,8 +52,8 @@ number_value scan_number(scanner<ItrT1> &scan) {
     std::int64_t e = 0;
     double a = 0.0;
 
-    while(is_digit()) {
-        if(helpers::reader::is_gap(*scan)) {
+    while (is_digit()) {
+        if (helpers::reader::is_gap(*scan)) {
             ++scan;
             continue;
         }
@@ -73,10 +69,10 @@ number_value scan_number(scanner<ItrT1> &scan) {
     bool found = false;
     auto scan_backup = scan;
 
-    if(!eol() && *scan == '.') {
+    if (!eol() && *scan == '.') {
         ++scan;
-        while(is_digit()) {
-            if(helpers::reader::is_gap(*scan)) {
+        while (is_digit()) {
+            if (helpers::reader::is_gap(*scan)) {
                 ++scan;
                 continue;
             }
@@ -88,12 +84,12 @@ number_value scan_number(scanner<ItrT1> &scan) {
         }
     }
 
-    if(!eol() && (*scan == 'e' || *scan == 'E')) {
+    if (!eol() && (*scan == 'e' || *scan == 'E')) {
         int sign = 1;
         int i = 0;
         ++scan;
-        if(!eol()) {
-            switch(*scan) {
+        if (!eol()) {
+            switch (*scan) {
             case '-':
                 ++scan;
                 sign = -1;
@@ -103,8 +99,8 @@ number_value scan_number(scanner<ItrT1> &scan) {
                 break;
             }
         }
-        while(is_digit()) {
-            if(helpers::reader::is_gap(*scan)) {
+        while (is_digit()) {
+            if (helpers::reader::is_gap(*scan)) {
                 ++scan;
                 continue;
             }
@@ -116,21 +112,21 @@ number_value scan_number(scanner<ItrT1> &scan) {
         e += (i * sign);
     }
 
-    while(e > 0) {
+    while (e > 0) {
         a *= 10.0;
         e -= 1;
     }
 
-    while(e < 0) {
+    while (e < 0) {
         a *= 0.1;
         e += 1;
     }
 
-    if(!found) {
+    if (!found) {
         scan = scan_backup;
-        return number_value {d};
+        return number_value { d };
     } else {
-        return number_value {a};
+        return number_value { a };
     }
 }
 
@@ -140,8 +136,8 @@ int main(int argc, char* argv[])
     auto scan = make_scanner(test.begin(), test.end());
     auto val = scan_number(scan);
 
-    std::cout << val.type << " i" << val.value.integer
-              << " f" << val.value.floating << "\n";
+    std::cout << val.type << " i" << val.value.integer << " f"
+              << val.value.floating << "\n";
     std::cout << &(*scan.begin()) << "\n";
 
     return 0;

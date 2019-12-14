@@ -2,6 +2,8 @@
 #include <map>
 #include <memory>
 
+#include "scanner.h"
+
 namespace eparser { namespace common {
     template <typename KeyT, typename ValueT, typename Comp = std::less<KeyT>>
     class trie {
@@ -196,6 +198,18 @@ namespace eparser { namespace common {
             return get_s<const_result_view>(&m_root, b, e, greedy);
         }
 
+        template <typename IterT>
+        result_view<IterT> get(scanner<IterT>& scan, bool greedy)
+        {
+            return get_scanner_s<result_view>(&m_root, scan, greedy);
+        }
+
+        template <typename IterT>
+        const_result_view<IterT> get(scanner<IterT>& scan, bool greedy) const
+        {
+            return get_scanner_s<const_result_view>(&m_root, scan, greedy);
+        }
+
     private:
         template <typename IterT>
         static void set_s(node_type* last, IterT begin, const IterT& end,
@@ -208,13 +222,42 @@ namespace eparser { namespace common {
         }
 
         template <template <typename> class ResultType, typename IterT,
-                  typename node_type>
-        static ResultType<IterT> get_s(node_type next_table, IterT b,
+                  typename NodeT>
+        static ResultType<IterT>
+        get_scanner_s(NodeT* next_table, scanner<IterT>& scan, bool greedy)
+        {
+            using result_type = ResultType<IterT>;
+
+            node_type* last_final = nullptr;
+            scanner<IterT> backup = scan;
+            IterT start = scan.begin();
+
+            while (!scan.eol()) {
+                next_table = next_table->get(*scan);
+                if (!next_table) {
+                    break;
+                }
+                if (next_table->value()) {
+                    last_final = next_table;
+                    backup = scan;
+                    if (!greedy) {
+                        break;
+                    }
+                }
+            }
+            scan = backup;
+            return last_final ? result_type(last_final, start, scan.begin())
+                              : result_type(nullptr, scan.end(), scan.end());
+        }
+
+        template <template <typename> class ResultType, typename IterT,
+                  typename NodeT>
+        static ResultType<IterT> get_s(NodeT next_table, IterT b,
                                        const IterT& e, bool greedy)
         {
             using result_type = ResultType<IterT>;
 
-            node_type last_final = nullptr;
+            NodeT last_final = nullptr;
 
             if (b == e) {
                 return result_type(nullptr, b, e);

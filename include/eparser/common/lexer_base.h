@@ -17,6 +17,7 @@ namespace eparser { namespace common {
         using string_type = std::basic_string<char_type>;
         using iterator = typename string_type::iterator;
         using const_iterator = typename string_type::const_iterator;
+        using scanner_type = common::scanner<const_iterator>;
         using less_type = LessT;
 
         using token_info = common::token_info<char_type, key_type>;
@@ -85,6 +86,19 @@ namespace eparser { namespace common {
         }
 
         token_info next(const_iterator begin, const_iterator end)
+        {
+            auto state = create_factory_();
+            auto next_getter = trie_.get(begin, end, true);
+            if (next_getter) {
+                return (*next_getter)(
+                    std::move(state),
+                    { next_getter.begin(), next_getter.end() });
+            }
+            return default_factory_(std::move(state),
+                                    { next_getter.begin(), next_getter.end() });
+        }
+
+        token_info next(scanner_type& scan)
         {
             auto state = create_factory_();
             auto next_getter = trie_.get(begin, end, true);
